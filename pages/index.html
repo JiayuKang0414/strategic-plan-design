@@ -603,6 +603,30 @@
     })();
   </script>
 
+  <!-- QUOTE SIZE-LARGE — shadow injection for image-expand quote
+       umd-element-quote has no built-in size-large variant in v1.18.12.
+       Targets the quote inside umd-layout-image-expand only. -->
+  <script>
+    (function () {
+      function injectQuoteLarge(el) {
+        if (!el.shadowRoot || el.__quoteLargeInjected) return;
+        el.__quoteLargeInjected = true;
+        var style = document.createElement('style');
+        style.textContent = [
+          '.quote-container-quote { font-size: 24px !important; line-height: 1.3em !important; }',
+          '@media (min-width: 650px) { .quote-container-quote { font-size: calc(24px + 0.5vw) !important; } }',
+          '@media (min-width: 1024px) { .quote-container-quote { font-size: 32px !important; } }'
+        ].join('\n');
+        el.shadowRoot.appendChild(style);
+      }
+      function injectAll() {
+        document.querySelectorAll('umd-layout-image-expand umd-element-quote').forEach(injectQuoteLarge);
+      }
+      injectAll();
+      customElements.whenDefined('umd-element-quote').then(injectAll);
+    })();
+  </script>
+
   <!-- NAV-HEADER LOGO WIDTH — shadow injection for strategic plan wordmark -->
   <script>
     (function () {
