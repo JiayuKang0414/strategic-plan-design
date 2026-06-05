@@ -289,6 +289,50 @@
       object-fit: cover;
       object-position: center;
     }
+
+    /* ============================================================
+       IMAGE-EXPAND CONTENT UTILITIES
+       Classes for div[slot="content"] inside umd-layout-image-expand.
+    ============================================================ */
+    .max-w-\[480px\] { max-width: 480px; }
+    .w-full          { width: 100%; }
+    .block           { display: block; }
+    .mr-auto         { margin-right: auto; }
+    .pl-md           { padding-left: 24px; }
+
+    .umd-adjacent-line-text { position: relative; }
+    .umd-adjacent-line-text::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background-color: #E21833;
+      left: -24px;
+    }
+
+    .umd-text-rich-simple-large-dark {
+      font-size: 18px;
+      line-height: 1.5em;
+      color: #ffffff;
+    }
+    .umd-text-rich-simple-large-dark * { color: #ffffff; }
+    .umd-text-rich-simple-large-dark > * { font-size: 18px; margin-top: 24px; }
+    .umd-text-rich-simple-large-dark > *:first-child { margin-top: 0; }
+    .umd-text-rich-simple-large-dark a {
+      color: #ffffff;
+      background-image: linear-gradient(#ffffff, #ffffff);
+      position: relative;
+      background-position: left calc(100% - 1px);
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+    }
+    .umd-text-rich-simple-large-dark a:hover,
+    .umd-text-rich-simple-large-dark a:focus {
+      background-image: linear-gradient(#FFD200, #FFD200);
+    }
   </style>
 
   <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
@@ -442,17 +486,13 @@
     </section>
 
     <!-- 8. PRESIDENT QUOTE — image expand with staircase photo -->
-    <section class="umd-layout-vertical-landing">
+    <section style="background: #000;">
       <umd-layout-image-expand>
-        <div slot="content">
-          <div class="max-w-[480px] umd-adjacent-line-text pl-md mr-auto">
-            <div class="umd-text-rich-simple-large-dark">
-              <blockquote>
-                <p>"This is our time to reinvent our University. We must reenvision our campus and community as a modern flagship research university for the common good."</p>
-              </blockquote>
-              <p>— President Darryl J. Pines</p>
-            </div>
-          </div>
+        <div slot="content" class="block max-w-[480px] w-full mr-auto">
+          <umd-element-quote data-display="statement" data-theme="dark" data-visual="transparent">
+            <p slot="quote">This is our time to reinvent our University. We must reenvision our campus and community as a modern flagship research university for the common good.</p>
+            <p slot="attribution">President Darryl J. Pines</p>
+          </umd-element-quote>
         </div>
         <img slot="image" src="../images/strategic-plan/students-staircase.jpg" alt="" />
       </umd-layout-image-expand>
@@ -561,6 +601,31 @@
       } else {
         init();
       }
+    })();
+  </script>
+
+  <!-- QUOTE TRANSPARENT — shadow injection for umd-element-quote[data-visual="transparent"]
+       data-visual="transparent" and data-theme="dark" are not implemented in cdn.js v1.18.12.
+       Inject background:transparent and white text into .quote-statement shadow class. -->
+  <script>
+    (function () {
+      function injectQuoteTransparent(el) {
+        if (!el.shadowRoot || el.__quoteTransparentInjected) return;
+        el.__quoteTransparentInjected = true;
+        var style = document.createElement('style');
+        style.textContent = [
+          '.quote-statement { background: transparent !important; }',
+          '.statement-quote { color: #ffffff !important; }',
+          '.statement-attribution { color: #ffffff !important; }',
+          '.statement-quote-icon svg path { fill: #E21833 !important; }'
+        ].join('\n');
+        el.shadowRoot.appendChild(style);
+      }
+      function injectAll() {
+        document.querySelectorAll('umd-element-quote[data-visual="transparent"]').forEach(injectQuoteTransparent);
+      }
+      injectAll();
+      customElements.whenDefined('umd-element-quote').then(injectAll);
     })();
   </script>
 
