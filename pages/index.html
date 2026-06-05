@@ -393,9 +393,9 @@
 
   <main>
 
-    <!-- 3. HERO — full-bleed dark overlay, Testudo image -->
+    <!-- 3. HERO — standard background hero, dark theme, Testudo image -->
     <section class="umd-layout-vertical-landing">
-      <umd-element-hero data-display="overlay" data-theme="dark">
+      <umd-element-hero data-theme="dark">
         <img slot="image" src="../images/strategic-plan/testudo-hero.png" alt="" />
         <h1 slot="headline">Fearlessly Forward</h1>
         <div slot="text">
@@ -406,7 +406,7 @@
     </section>
 
     <!-- 4. OUR STRATEGIC COMMITMENTS — sticky pathway, dark section wrapper, image left -->
-    <section class="umd-layout-vertical-landing" style="background: #000;">
+    <section class="umd-layout-background-full-dark">
       <umd-element-pathway data-display="sticky" data-theme="dark" data-layout-image-position="left">
         <img slot="image" src="../images/strategic-plan/students-campus-pathway.png" alt="Students walking on the University of Maryland campus" />
         <h2 slot="headline">Our Strategic Commitments</h2>
@@ -614,7 +614,7 @@
         el.__quoteTransparentInjected = true;
         var style = document.createElement('style');
         style.textContent = [
-          '.quote-statement { background: transparent !important; }',
+          '.quote-statement { background: transparent !important; border-top: none !important; box-shadow: none !important; }',
           '.statement-quote { color: #ffffff !important; }',
           '.statement-attribution { color: #ffffff !important; }',
           '.statement-quote-icon svg path { fill: #E21833 !important; }'
