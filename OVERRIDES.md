@@ -6,12 +6,26 @@
 
 Pages using this: all pages in this project.
 
-## Pathway: always sticky, always on a dark section wrapper
+## Hero: use standard background hero — never `data-display="overlay"`
 
-All `umd-element-pathway` components in this project use `data-display="sticky"` with `data-theme="dark"`. The section wrapper must include `style="background: #000;"` — the component does not set the section background itself, and a missing wrapper leaves a white gap above/below.
+For landing page heroes in this project, use the standard/background hero: `data-theme="dark"` with **no** `data-display` attribute. The overlay variant (`data-display="overlay"`) composites a color layer over the image and is a different visual treatment. Omitting `data-display` gives the correct standard full-bleed image hero.
 
 ```html
-<section class="umd-layout-vertical-landing" style="background: #000;">
+<!-- ✓ Correct -->
+<umd-element-hero data-theme="dark">
+
+<!-- ✗ Wrong — overlay is a distinct variant, not the standard background hero -->
+<umd-element-hero data-display="overlay" data-theme="dark">
+```
+
+Pages using this: all landing pages in this project.
+
+## Pathway: always sticky, on `umd-layout-background-full-dark` wrapper
+
+All `umd-element-pathway` components in this project use `data-display="sticky"` with `data-theme="dark"`. Use `class="umd-layout-background-full-dark"` on the section wrapper — this provides the black background AND the correct vertical padding (48px mobile → 80px tablet → 104px desktop). Do NOT use `umd-layout-vertical-landing` + inline `style="background:#000"` for dark pathway sections, as that omits the padding steps.
+
+```html
+<section class="umd-layout-background-full-dark">
   <umd-element-pathway data-display="sticky" data-theme="dark">
     ...
   </umd-element-pathway>
