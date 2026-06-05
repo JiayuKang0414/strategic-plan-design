@@ -491,7 +491,7 @@
     <section class="umd-layout-vertical-landing">
       <umd-layout-image-expand>
         <div slot="content" class="block max-w-[480px] w-full mr-auto">
-          <umd-element-quote type="feature" data-visual-size="" data-animation="false" data-visual-transparent="true" data-theme="dark">
+          <umd-element-quote type="feature" data-visual-size="large" data-animation="false" data-visual-transparent="true" data-theme="dark">
             <div slot="quote">
               <p>This is our time to reinvent our University. We must reenvision our campus and community as a modern flagship research university for the common good.</p>
             </div>
@@ -603,9 +603,9 @@
     })();
   </script>
 
-  <!-- QUOTE SIZE-LARGE — shadow injection for image-expand quote
-       umd-element-quote has no built-in size-large variant in v1.18.12.
-       Targets the quote inside umd-layout-image-expand only. -->
+  <!-- QUOTE SIZE-LARGE — shadow injection for umd-element-quote[data-visual-size="large"]
+       data-visual-size="large" is unimplemented in cdn.js v1.18.12.
+       Polyfills the intended larger text scale. -->
   <script>
     (function () {
       function injectQuoteLarge(el) {
@@ -620,7 +620,7 @@
         el.shadowRoot.appendChild(style);
       }
       function injectAll() {
-        document.querySelectorAll('umd-layout-image-expand umd-element-quote').forEach(injectQuoteLarge);
+        document.querySelectorAll('umd-element-quote[data-visual-size="large"]').forEach(injectQuoteLarge);
       }
       injectAll();
       customElements.whenDefined('umd-element-quote').then(injectAll);
