@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fearlessly Forward — Strategic Plan | University of Maryland</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/font-faces.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/tokens.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/base.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/typography.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/web-components.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/layout.min.css">
+  <style>
+    /* ============================================================
+       COMPONENT REGISTRATION GAP-FILLS
+    ============================================================ */
+    umd-element-utility-header:not(:defined) { content-visibility: hidden; }
+    umd-element-utility-header { display: block; container-type: normal; }
+
+    umd-layout-image-expand:not(:defined) { content-visibility: hidden; }
+    umd-layout-image-expand {
+      display: block;
+      container-type: inline-size;
+      width: 100%;
+    }
+
+    /* ============================================================
+       WATERMARK DECORATION
+    ============================================================ */
+    :is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+      position: absolute;
+      top: 20px;
+      left: -2%;
+      color: #f1f1f1;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: min(calc(44px + 13vw), 240px);
+      line-height: 0;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+    :is(.umd-text-decoration-watermark, .umd-watermark):not(.umd-watermark-dark) > * {
+      opacity: 0.6;
+      z-index: -1;
+    }
+    .umd-watermark-dark > * {
+      opacity: 0.12;
+      z-index: inherit;
+    }
+    @keyframes slide-in-from-left {
+      from { transform: translate(-15vw); }
+      to   { transform: translate(0); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: scroll()) {
+        :is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+          animation: slide-in-from-left forwards;
+          animation-timeline: view();
+          animation-range-start: 0;
+          animation-range-end: 100vh;
+          transform: translate(-15vw);
+        }
+      }
+    }
+
+    /* ============================================================
+       LAYOUT AUGMENTATIONS
+    ============================================================ */
+    .umd-layout-space-horizontal-larger {
+      position: relative;
+      container-type: inline-size;
+      isolation: isolate;
+    }
+    @media (min-width: 1024px) {
+      .umd-layout-space-columns-left { align-items: flex-start; }
+      .umd-layout-space-columns-left > *:first-child { flex-shrink: 0; }
+    }
+
+    /* ============================================================
+       BACKGROUND-FULL-DARK BUG FIX
+    ============================================================ */
+    .umd-layout-background-full-dark {
+      background-color: #000000;
+      padding: 48px 0;
+    }
+    @media (min-width: 768px) {
+      .umd-layout-background-full-dark { padding: 80px 0; }
+    }
+    @media (min-width: 1200px) {
+      .umd-layout-background-full-dark { padding: 104px 0; }
+    }
+
+    /* ============================================================
+       MASONRY SECTION-INTRO COMPANION
+    ============================================================ */
+    @media (min-width: 768px) {
+      umd-element-section-intro + .umd-layout-grid-masonry,
+      umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 32px; }
+    }
+    @media (min-width: 1024px) {
+      umd-element-section-intro + .umd-layout-grid-masonry,
+      umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 40px; }
+    }
+
+    /* ============================================================
+       COLOR UTILITIES
+    ============================================================ */
+    .text-black { color: #000; }
+    .text-white { color: #ffffff; }
+
+    /* ============================================================
+       RICH TEXT ADVANCED
+    ============================================================ */
+    .umd-text-rich-advanced {
+      font-size: 18px;
+      line-height: 1.5em;
+    }
+    .umd-text-rich-advanced * { color: #454545; }
+    .umd-text-rich-advanced > * { font-size: 18px; margin-top: 24px; }
+    .umd-text-rich-advanced > *:first-child { margin-top: 0; }
+    .umd-text-rich-advanced a {
+      color: #000000;
+      background-image: linear-gradient(#000000, #000000);
+      position: relative;
+      background-position: left calc(100% - 1px);
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+    }
+    .umd-text-rich-advanced a:hover,
+    .umd-text-rich-advanced a:focus {
+      background-image: linear-gradient(#E21833, #E21833);
+    }
+
+    /* ============================================================
+       STICKY COLUMNS UTILITIES
+    ============================================================ */
+    .mb-md { margin-bottom: 24px; }
+    .mb-sm { margin-bottom: 16px; }
+
+    /* ============================================================
+       UTILITY NAVIGATION / SHELL-ITEM LINK STYLES
+    ============================================================ */
+    .umd-shell-utility-item .umd-shell-utility-actions {
+      align-items: center;
+      display: flex;
+      gap: 4px;
+    }
+    .umd-shell-utility-item:not(:last-child) .umd-shell-utility-actions {
+      border-right: 1px solid #E6E6E6;
+      margin-right: 16px;
+      padding-right: 16px;
+    }
+    .umd-shell-utility-item a {
+      color: #242424;
+      text-decoration: none;
+    }
+    .umd-shell-utility-item a:hover,
+    .umd-shell-utility-item a:focus { color: #E21833; }
+
+    umd-element-navigation-header div[slot="utility-navigation"] { gap: 0; }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item {
+      position: relative;
+      z-index: 99999;
+    }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item button {
+      color: #242424;
+      text-decoration: none;
+    }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links {
+      display: none;
+    }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links > * {
+      color: #242424;
+      display: block;
+      padding: 12px;
+      text-align: right;
+      text-decoration: none;
+    }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:hover,
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:focus {
+      color: #a90007;
+    }
+    umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links[aria-hidden="false"] {
+      align-items: flex-end;
+      background-color: #fafafa;
+      box-shadow: -1px 9px 32px -10px rgba(0, 0, 0, .19);
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      right: 0;
+      top: 16px;
+      width: 200px;
+      max-width: 80vw;
+    }
+
+    /* ============================================================
+       BANNER-PROMO STACKED ACTIONS
+    ============================================================ */
+    .banner-promo-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       SECTION DIVIDER
+    ============================================================ */
+    .umd-text-divider {
+      border: none;
+      border-top: 1px solid #000000;
+      margin: 0 0 24px 0;
+    }
+    .umd-text-divider.dark { border-top-color: #ffffff; }
+
+    /* ============================================================
+       TRAILING-LINE LABEL
+    ============================================================ */
+    .umd-text-line-trailing,
+    .umd-text-line-trailing-dark {
+      font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      line-height: 1.42em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+    .umd-text-line-trailing::before,
+    .umd-text-line-trailing-dark::before {
+      content: "";
+      position: absolute;
+      top: 9px;
+      right: 0;
+      width: 100vw;
+      height: 1px;
+      background: #000000;
+      z-index: 1;
+    }
+    .umd-text-line-trailing > span,
+    .umd-text-line-trailing-dark > span {
+      position: relative;
+      background-color: inherit;
+      padding-right: 8px;
+      z-index: 2;
+    }
+    .umd-text-line-trailing + *,
+    .umd-text-line-trailing-dark + * { margin-top: 40px; }
+    .umd-text-line-trailing-dark { background-color: #000000; color: #ffffff; }
+    .umd-text-line-trailing-dark::before { background: #ffffff; }
+
+    /* ============================================================
+       NO-GAP CARD GRID
+    ============================================================ */
+    .umd-layout-grid-cards-no-gap {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+      .umd-layout-grid-cards-no-gap { grid-template-columns: repeat(3, 1fr); }
+    }
+    .umd-layout-grid-cards-no-gap > * { height: 100%; }
+
+    /* ============================================================
+       OVERLAY CARD SIZE-LARGE
+    ============================================================ */
+    umd-element-card-overlay.size-large { min-height: 320px; }
+    @media (min-width: 768px) {
+      umd-element-card-overlay.size-large { min-height: 560px; }
+    }
+
+    /* ============================================================
+       STRATEGIC PLAN: CAMPUS PHOTO SECTION
+    ============================================================ */
+    .sp-campus-photo {
+      display: block;
+      width: 100%;
+      line-height: 0;
+    }
+    .sp-campus-photo img {
+      width: 100%;
+      display: block;
+      max-height: 560px;
+      object-fit: cover;
+      object-position: center;
+    }
+  </style>
+
+  <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
+</head>
+<body>
+
+  <!-- 1. GLOBAL UNIVERSITY HEADER -->
+  <umd-element-navigation-utility data-alert-off="true" role="navigation" aria-label="Utility navigation"></umd-element-navigation-utility>
+  <umd-element-utility-header></umd-element-utility-header>
+
+  <!-- 2. SITE NAVIGATION HEADER -->
+  <umd-element-navigation-header
+    sticky
+    class="umd-layout-space-horizontal-full">
+    <a slot="logo" href="https://strategicplan.umd.edu/">
+      <img src="../images/logos/strategic-plan-logo.svg" alt="University of Maryland Strategic Plan"
+           onerror="this.onerror=null;this.src='../images/logos/primary-logo-dark.svg';" />
+    </a>
+    <nav slot="main-navigation">
+      <umd-element-nav-item>
+        <a slot="primary-link" href="index.html">Home</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="guiding-principles.html">Guiding Principles</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="strategic-commitments.html">Strategic Commitments</a>
+        <div slot="dropdown-links">
+          <a href="strategic-commitments/reimagine-learning.html">We Reimagine Learning</a>
+          <a href="strategic-commitments/grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="strategic-commitments/people-communities.html">We Invest in People and Communities</a>
+          <a href="strategic-commitments/public-good.html">We Partner to Advance the Public Good</a>
+        </div>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="implementation.html">Implementation</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="metrics.html">Metrics</a>
+      </umd-element-nav-item>
+    </nav>
+    <div slot="primary-slide-links">
+      <a href="index.html"><span>Home</span></a>
+      <a href="guiding-principles.html"><span>Guiding Principles</span></a>
+      <a href="strategic-commitments.html" data-child-ref="strategic-commitments"><span>Strategic Commitments</span></a>
+      <a href="implementation.html"><span>Implementation</span></a>
+      <a href="metrics.html"><span>Metrics</span></a>
+    </div>
+    <div slot="children-slides">
+      <div data-parent-ref="strategic-commitments">
+        <a href="strategic-commitments/reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="strategic-commitments/grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="strategic-commitments/people-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="strategic-commitments/public-good.html"><span>We Partner to Advance the Public Good</span></a>
+      </div>
+    </div>
+  </umd-element-navigation-header>
+
+  <main>
+
+    <!-- 3. HERO — full-bleed dark overlay, Testudo image -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-hero data-display="overlay" data-theme="dark">
+        <img slot="image" src="../images/strategic-plan/testudo-hero.png" alt="" />
+        <h1 slot="headline">Fearlessly Forward</h1>
+        <div slot="text">
+          <p>In Pursuit of Excellence and Impact for the Public Good</p>
+          <p>The University of Maryland Strategic Plan</p>
+        </div>
+      </umd-element-hero>
+    </section>
+
+    <!-- 4. OUR STRATEGIC COMMITMENTS — sticky pathway, dark section wrapper, image left -->
+    <section class="umd-layout-vertical-landing" style="background: #000;">
+      <umd-element-pathway data-display="sticky" data-theme="dark" data-layout-image-position="left">
+        <img slot="image" src="../images/strategic-plan/students-campus-pathway.png" alt="Students walking on the University of Maryland campus" />
+        <h2 slot="headline">Our Strategic Commitments</h2>
+        <div slot="text">
+          <p>The University of Maryland is an extraordinary place—vibrant and dynamic and diverse. We are a place of learning, a school dedicated to the art and science of education and committed to reimagining teaching and learning inside each classroom and community.</p>
+          <p>We are a campus dedicated to the indisputable value of science and innovation, freely and creatively and rigorously exploring the work of thousands of researchers and discoveries in hundreds of laboratories, libraries, and collaborative spaces. Situated just a few miles from the nation's capital, our university is a place where new knowledge is pursued, discovered, and championed.</p>
+          <p>We are a community, nearly half a million members strong, of diverse students, faculty, staff, and alumni—a place where thousands come to work every day to make a difference. Our diversity is integral to our excellence, and ours is a community intrinsically connected to our surrounding neighborhoods, our state, our nation, and our world.</p>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 5. OUR STRATEGIC COMMITMENTS — Venn diagram [PLACEHOLDER]
+         Custom component: four overlapping circles centered on "FEARLESSLY FORWARD"
+           · We Reimagine Learning
+           · We Take On Humanity's Grand Challenges
+           · We Invest in People and Communities
+           · We Partner to Advance the Public Good
+         See OVERRIDES.md for implementation notes.
+         Section heading below is included; Venn diagram will be inserted inside it. -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-section-intro>
+          <h2 slot="headline">Our Strategic Commitments</h2>
+        </umd-element-section-intro>
+        <!-- TODO: insert custom Venn diagram component here -->
+      </div>
+    </section>
+
+    <!-- 6. NEW STRATEGIC PLAN INITIATIVES — sticky columns + 2×2 icon card grid -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-sticky-columns class="umd-layout-space-horizontal-larger" data-layout-position="100px">
+        <div slot="sticky-column">
+          <h2 class="umd-sans-largest-uppercase mb-md">New Strategic Plan Initiatives</h2>
+        </div>
+        <div slot="static-column">
+          <div class="umd-layout-grid-gap-two">
+            <umd-element-card-icon>
+              <img slot="image" src="../images/strategic-plan/icons/reimagine-learning.svg" alt="" />
+              <h3 slot="headline">We Reimagine Learning</h3>
+              <p slot="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent adipiscing aliqu elit felis.</p>
+            </umd-element-card-icon>
+            <umd-element-card-icon>
+              <img slot="image" src="../images/strategic-plan/icons/grand-challenges.svg" alt="" />
+              <h3 slot="headline">We Take On Humanity's Grand Challenges</h3>
+              <p slot="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent adipiscing aliqu elit felis.</p>
+            </umd-element-card-icon>
+            <umd-element-card-icon>
+              <img slot="image" src="../images/strategic-plan/icons/people-communities.svg" alt="" />
+              <h3 slot="headline">We Invest in People and Communities</h3>
+              <p slot="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent adipiscing aliqu elit felis.</p>
+            </umd-element-card-icon>
+            <umd-element-card-icon>
+              <img slot="image" src="../images/strategic-plan/icons/public-good.svg" alt="" />
+              <h3 slot="headline">We Partner to Advance the Public Good</h3>
+              <p slot="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent adipiscing aliqu elit felis.</p>
+            </umd-element-card-icon>
+          </div>
+        </div>
+      </umd-element-sticky-columns>
+    </section>
+
+    <!-- 7. OUR VISION — pathway-highlight: text + CTA left, vision statement right -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway-highlight>
+        <h2 slot="headline">Our Vision</h2>
+        <div slot="text">
+          <p>We must be united in our noble and fearless purpose. Because celebrating differences and leveling societal inequities must be among our greatest strengths, the grand challenges that define today's ideas and actions are felt not just in individual achievement, but in our collective accomplishments.</p>
+          <p>Fearlessly Forward in Pursuit of Excellence and Impact for the Public Good, the University of Maryland Strategic Plan presents a bold reimagining of what our university must be—to serve our state, our humanity, and the world.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="secondary">
+            <a href="guiding-principles.html">Our Guiding Principles</a>
+          </umd-element-call-to-action>
+        </div>
+        <p slot="highlight">To improve the lives of every person on Earth, we will reimagine teaching and learning; accelerate solutions to the grand challenges of our time through creativity and discovery; and forge a diverse, innovative campus community where excellence is celebrated and equity is relentlessly pursued. Together, we will dedicate ourselves to advancing the public good because our individual well-being is enduringly bound to our collective well-being.</p>
+      </umd-element-pathway-highlight>
+    </section>
+
+    <!-- 8. PRESIDENT QUOTE — image expand with staircase photo -->
+    <section class="umd-layout-vertical-landing">
+      <umd-layout-image-expand>
+        <div slot="content">
+          <div class="max-w-[480px] umd-adjacent-line-text pl-md mr-auto">
+            <div class="umd-text-rich-simple-large-dark">
+              <blockquote>
+                <p>"This is our time to reinvent our University. We must reenvision our campus and community as a modern flagship research university for the common good."</p>
+              </blockquote>
+              <p>— President Darryl J. Pines</p>
+            </div>
+          </div>
+        </div>
+        <img slot="image" src="../images/strategic-plan/students-staircase.jpg" alt="" />
+      </umd-layout-image-expand>
+    </section>
+
+    <!-- 9. CTA BAR — banner-promo, default gold theme -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-banner-promo>
+          <h2 slot="headline">Fearlessly Forward in Pursuit of Excellence and Impact for the Public Good.</h2>
+          <p slot="text">The University of Maryland Strategic Plan is a living document and will evolve and grow as we do. Please visit this site to follow our progress.</p>
+          <div slot="actions" class="banner-promo-actions">
+            <umd-element-call-to-action data-display="primary">
+              <a href="#">View Readable PDF</a>
+            </umd-element-call-to-action>
+          </div>
+        </umd-element-banner-promo>
+      </div>
+    </section>
+
+    <!-- 10. CAMPUS PHOTO — full-width decorative image -->
+    <section class="sp-campus-photo">
+      <img src="../page-builder/images/large/campus/hornbake-plaza.jpg" alt="" />
+    </section>
+
+  </main>
+
+  <!-- 11. FOOTER -->
+  <umd-element-footer data-display="visual">
+    <a slot="logo" href="https://strategicplan.umd.edu/">
+      <img src="../images/logos/footer-logo.svg" alt="University of Maryland Strategic Plan" />
+    </a>
+    <img slot="image" src="../images/strategic-plan/footer.png" alt="" />
+  </umd-element-footer>
+
+  <!-- GRID ENTRY ANIMATIONS -->
+  <script>
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var GRID_SELECTORS = [
+        '.umd-layout-grid-gap-two',
+        '.umd-layout-grid-gap-three',
+        '.umd-layout-grid-gap-stacked',
+        '.umd-layout-grid-columns-four',
+        '.umd-layout-grid-masonry',
+        '.umd-layout-grid-inline-tablet-rows',
+        '.umd-animation-grid',
+        '.umd-grid-animation'
+      ].map(function (sel) { return sel + ':not([data-animation="off"])'; });
+
+      var style = document.createElement('style');
+      style.textContent = [
+        '@keyframes fade-in-from-bottom {',
+        '  from { opacity: 0; transform: translateY(50px); }',
+        '  to   { opacity: 1; transform: translateY(0); }',
+        '}',
+        ':where(' + GRID_SELECTORS.join(',') + ') > * {',
+        '  opacity: 0;',
+        '  transform: translateY(50px);',
+        '}',
+        '.umd-animation-transition-fade-bottom {',
+        '  animation: fade-in-from-bottom 1s forwards;',
+        '}'
+      ].join('\n');
+      document.head.appendChild(style);
+
+      function tagRowOffsets(grid) {
+        var children = Array.prototype.slice.call(grid.children);
+        var prevTop = null;
+        children.forEach(function (child) {
+          var top = child.getBoundingClientRect().top;
+          if (prevTop !== null && Math.abs(top - prevTop) < 1) {
+            child.dataset.animation = 'offset';
+          } else {
+            delete child.dataset.animation;
+          }
+          prevTop = top;
+        });
+      }
+
+      function init() {
+        var grids = document.querySelectorAll(GRID_SELECTORS.join(','));
+        if (!grids.length) return;
+
+        grids.forEach(tagRowOffsets);
+        window.addEventListener('resize', function () { grids.forEach(tagRowOffsets); });
+
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var el = entry.target;
+            el.style.animationDelay = el.dataset.animation === 'offset' ? '350ms' : '0ms';
+            el.classList.add('umd-animation-transition-fade-bottom');
+            observer.unobserve(el);
+          });
+        }, { threshold: 0.35 });
+
+        grids.forEach(function (grid) {
+          Array.prototype.forEach.call(grid.children, function (child) { observer.observe(child); });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+
+  <!-- NAV-HEADER LOGO WIDTH — shadow injection for strategic plan wordmark -->
+  <script>
+    (function () {
+      function inject(el) {
+        if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
+        el.__navHeaderLogoInjected = true;
+        var style = document.createElement('style');
+        style.textContent = '.element-header-logo img { max-width: 320px !important; }';
+        el.shadowRoot.appendChild(style);
+      }
+      document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      customElements.whenDefined('umd-element-navigation-header').then(function () {
+        document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      });
+    })();
+  </script>
+
+</body>
+</html>
