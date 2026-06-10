@@ -333,6 +333,183 @@
     .umd-text-rich-simple-large-dark a:focus {
       background-image: linear-gradient(#FFD200, #FFD200);
     }
+
+    /* ============================================================
+       STRATEGIC COMMITMENTS VENN DIAGRAM
+    ============================================================ */
+    .sp-venn-diagram {
+      --venn-size: 300px;
+      --circle-size: 154px;
+      --center-size: 90px;
+      height: var(--venn-size);
+      margin: 48px auto 0;
+      position: relative;
+      width: var(--venn-size);
+    }
+    @media (min-width: 768px) {
+      .sp-venn-diagram {
+        --venn-size: 460px;
+        --circle-size: 238px;
+        --center-size: 140px;
+        margin-top: 64px;
+      }
+    }
+    @media (min-width: 1024px) {
+      .sp-venn-diagram {
+        --venn-size: 560px;
+        --circle-size: 290px;
+        --center-size: 170px;
+        margin-top: 80px;
+      }
+    }
+
+    .sp-venn-circle {
+      border-radius: 50%;
+      display: block;
+      font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+      font-weight: 700;
+      height: var(--circle-size);
+      position: absolute;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: scale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s ease,
+                  filter 0.3s ease;
+      width: var(--circle-size);
+    }
+    .sp-venn-circle:focus-visible {
+      outline: 3px solid #E21833;
+      outline-offset: 4px;
+    }
+    .sp-venn-diagram:has(.sp-venn-circle:hover) .sp-venn-circle:not(:hover) {
+      filter: saturate(0.7);
+      opacity: 0.82;
+      scale: 0.97;
+    }
+    .sp-venn-circle:hover {
+      scale: 1.05;
+      z-index: 15 !important;
+    }
+
+    .sp-venn-label {
+      --nudge-x: 0px;
+      --nudge-y: 0px;
+      color: #000;
+      display: block;
+      font-size: 11px;
+      left: 50%;
+      letter-spacing: 0.04em;
+      line-height: 1.3em;
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      transform: translate(calc(-50% + var(--nudge-x)), calc(-50% + var(--nudge-y)));
+      transition: transform 0.35s ease;
+      width: 68%;
+    }
+    @media (min-width: 768px) { .sp-venn-label { font-size: 14px; } }
+    @media (min-width: 1024px) { .sp-venn-label { font-size: 16px; } }
+
+    /* Circle 1 — top, UMD Red */
+    .sp-venn-circle[data-commitment="1"] {
+      background-color: rgba(226, 24, 51, 0.88);
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+    .sp-venn-circle[data-commitment="1"] .sp-venn-label { --nudge-y: -10px; }
+    @media (min-width: 768px) {
+      .sp-venn-circle[data-commitment="1"] .sp-venn-label { --nudge-y: -16px; }
+    }
+
+    /* Circle 2 — right, UMD Gold */
+    .sp-venn-circle[data-commitment="2"] {
+      background-color: rgba(255, 210, 0, 0.88);
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+    }
+    .sp-venn-circle[data-commitment="2"] .sp-venn-label { --nudge-x: 20px; --nudge-y: 18px; width: 60%; }
+    @media (min-width: 768px) {
+      .sp-venn-circle[data-commitment="2"] .sp-venn-label { --nudge-x: 26px; --nudge-y: 24px; width: 60%; }
+    }
+    @media (min-width: 1024px) {
+      .sp-venn-circle[data-commitment="2"] .sp-venn-label { --nudge-x: 34px; --nudge-y: 28px; width: 60%; }
+    }
+
+    /* Circle 3 — bottom, light gray */
+    .sp-venn-circle[data-commitment="3"] {
+      background-color: rgba(200, 200, 200, 0.88);
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .sp-venn-circle[data-commitment="3"] .sp-venn-label { --nudge-y: 22px; }
+    @media (min-width: 768px) {
+      .sp-venn-circle[data-commitment="3"] .sp-venn-label { --nudge-y: 30px; }
+    }
+
+    /* Circle 4 — left, dark charcoal */
+    .sp-venn-circle[data-commitment="4"] {
+      background-color: rgba(69, 69, 69, 0.88);
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+    .sp-venn-circle[data-commitment="4"] .sp-venn-label {
+      color: #fff;
+      --nudge-x: -25px;
+      --nudge-y: 18px;
+      width: 60%;
+    }
+    @media (min-width: 768px) {
+      .sp-venn-circle[data-commitment="4"] .sp-venn-label { --nudge-x: -32px; --nudge-y: 24px; width: 60%; }
+    }
+    @media (min-width: 1024px) {
+      .sp-venn-circle[data-commitment="4"] .sp-venn-label { --nudge-x: -38px; --nudge-y: 28px; width: 60%; }
+    }
+
+    /* On hover: text glides back to the circle's center */
+    .sp-venn-diagram .sp-venn-circle:hover .sp-venn-label {
+      --nudge-x: 0px;
+      --nudge-y: 0px;
+    }
+
+    /* Center bubble */
+    .sp-venn-center {
+      align-items: center;
+      background-color: #000;
+      border: 4px solid #fff;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      height: var(--center-size);
+      justify-content: center;
+      left: 50%;
+      letter-spacing: 0.12em;
+      line-height: 1.15em;
+      pointer-events: none;
+      position: absolute;
+      text-align: center;
+      text-transform: uppercase;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transition: scale 0.35s ease;
+      width: var(--center-size);
+      z-index: 9;
+    }
+    @media (min-width: 768px) { .sp-venn-center { border-width: 5px; font-size: 13px; } }
+    @media (min-width: 1024px) { .sp-venn-center { font-size: 15px; } }
+    .sp-venn-diagram:has(.sp-venn-circle:hover) .sp-venn-center {
+      scale: 1.08;
+    }
   </style>
 
   <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
@@ -433,7 +610,21 @@
         <umd-element-section-intro>
           <h2 slot="headline">Our Strategic Commitments</h2>
         </umd-element-section-intro>
-        <!-- TODO: insert custom Venn diagram component here -->
+        <div class="sp-venn-diagram" role="figure" aria-label="Strategic Commitments: four areas — We Reimagine Learning, We Take On Humanity's Grand Challenges, We Invest in People and Communities, and We Partner to Advance the Public Good — converging on Fearlessly Forward">
+          <a href="strategic-commitments/reimagine-learning.html" class="sp-venn-circle" data-commitment="1">
+            <span class="sp-venn-label">We Reimagine Learning</span>
+          </a>
+          <a href="strategic-commitments/grand-challenges.html" class="sp-venn-circle" data-commitment="2">
+            <span class="sp-venn-label">We Take On Humanity's Grand Challenges</span>
+          </a>
+          <a href="strategic-commitments/people-communities.html" class="sp-venn-circle" data-commitment="3">
+            <span class="sp-venn-label">We Invest in People &amp; Communities</span>
+          </a>
+          <a href="strategic-commitments/public-good.html" class="sp-venn-circle" data-commitment="4">
+            <span class="sp-venn-label">We Partner to Advance the Public Good</span>
+          </a>
+          <div class="sp-venn-center" aria-hidden="true">Fearlessly Forward</div>
+        </div>
       </div>
     </section>
 
