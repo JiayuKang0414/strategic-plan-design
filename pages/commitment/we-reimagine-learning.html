@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We Reimagine Learning — Fearlessly Forward | University of Maryland</title>
+  <meta name="description" content="We reimagine learning and teaching as inclusive, experiential, publicly engaged, creative, integrative, holistic, and empowering.">
+
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/font-faces.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/tokens.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/base.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/typography.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/web-components.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/layout.min.css">
+  <style>
+/* ============================================================
+   1. COMPONENT REGISTRATION GAP-FILLS
+   Re-add :defined rules for components missing from upstream
+   web-components.min.css. As those land upstream, drop these.
+   ============================================================ */
+
+/* umd-element-utility-header — present on every page (band above the
+   nav header). Not in upstream bundle as of v1.8.11. */
+umd-element-utility-header:not(:defined) { content-visibility: hidden; }
+umd-element-utility-header { display: block; container-type: normal; }
+
+/* umd-element-carousel* — not in upstream bundle. */
+umd-element-carousel:not(:defined),
+umd-element-carousel-cards:not(:defined),
+umd-element-carousel-thumbnail:not(:defined),
+umd-element-carousel-image:not(:defined),
+umd-element-carousel-image-wide:not(:defined),
+umd-element-carousel-multiple-image:not(:defined) {
+  content-visibility: hidden;
+}
+umd-element-carousel,
+umd-element-carousel-cards,
+umd-element-carousel-thumbnail,
+umd-element-carousel-image,
+umd-element-carousel-image-wide,
+umd-element-carousel-multiple-image {
+  display: block;
+  container-type: inline-size;
+}
+
+/* umd-layout-image-expand — full-bleed pseudo-component.
+   Width:100% is project-specific (collapses without it). */
+umd-layout-image-expand:not(:defined) { content-visibility: hidden; }
+umd-layout-image-expand {
+  display: block;
+  container-type: inline-size;
+  width: 100%;
+}
+
+/* Project-specific spacing for breadcrumb (not a default in upstream). */
+umd-element-breadcrumb:defined { margin-top: 16px; }
+
+
+/* ============================================================
+   2. WATERMARK DECORATION
+   ============================================================ */
+:is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+  position: absolute;
+  top: 20px;
+  left: -2%;
+  color: #f1f1f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: min(calc(44px + 13vw), 240px);
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+:is(.umd-text-decoration-watermark, .umd-watermark):not(.umd-watermark-dark) > * {
+  opacity: 0.6;
+  z-index: -1;
+}
+.umd-watermark-dark > * {
+  opacity: 0.12;
+  z-index: inherit;
+}
+@keyframes slide-in-from-left {
+  from { transform: translate(-15vw); }
+  to   { transform: translate(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    :is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+      animation: slide-in-from-left forwards;
+      animation-timeline: view();
+      animation-range-start: 0;
+      animation-range-end: 100vh;
+      transform: translate(-15vw);
+    }
+  }
+}
+
+
+/* ============================================================
+   3. LAYOUT AUGMENTATIONS
+   Extra properties on upstream layout classes that layout.min.css
+   doesn't include. These cascade over the upstream rules.
+   ============================================================ */
+
+/* Upstream sets max-width/padding correctly. These extra properties are
+   required for watermark positioning and the internal @container query
+   used by umd-element-section-intro-wide. */
+.umd-layout-space-horizontal-larger {
+  position: relative;
+  container-type: inline-size;
+  isolation: isolate;
+}
+
+/* Upstream omits align-items and flex-shrink on the columns-left layout.
+   align-items: flex-start prevents variable-height sidebar from stretching;
+   flex-shrink: 0 keeps the fixed 242px sidebar width under constraint.
+   Breakpoint matches upstream desktop.min (1024px) after DSYS-3063 fix —
+   sidebar width/margin moved from tablet.min (768px) to desktop.min. */
+@media (min-width: 1024px) {
+  .umd-layout-space-columns-left { align-items: flex-start; }
+  .umd-layout-space-columns-left > *:first-child { flex-shrink: 0; }
+}
+
+
+/* ============================================================
+   4. BACKGROUND-FULL-DARK BUG FIX
+   layout.min.css serializes the highDef breakpoint as
+   @media([object Object]) — ignored by browsers — because
+   background/full.ts:42 uses media.queries.highDef (the whole
+   object) instead of media.queries.highDef.min. This rule
+   cascades over the broken upstream with the correct breakpoint.
+   ============================================================ */
+.umd-layout-background-full-dark {
+  background-color: #000000;
+  padding: 48px 0;
+}
+@media (min-width: 768px) {
+  .umd-layout-background-full-dark { padding: 80px 0; }
+}
+@media (min-width: 1200px) {
+  .umd-layout-background-full-dark { padding: 104px 0; }
+}
+
+
+/* ============================================================
+   5. MASONRY SECTION-INTRO COMPANION
+   The base .umd-layout-grid-masonry class is provided by layout.min.css (CDN).
+   This rule compensates for masonry's negative top margin when a section
+   intro immediately precedes it — layout.min.css does not include this fix.
+   ============================================================ */
+@media (min-width: 768px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 32px; }
+}
+@media (min-width: 1024px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 40px; }
+}
+
+
+/* ============================================================
+   6. COLOR UTILITIES — not in upstream tokens or typography bundles
+   ============================================================ */
+.text-black { color: #000; }
+.text-white { color: #ffffff; }
+
+
+/* ============================================================
+   7. RICH TEXT ADVANCED — editorial body copy
+   Light and dark variants. 18px/1.5em with link hover styles.
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-rich-advanced with the same base sizing and link
+   animation. This section is kept as an intentional DELTA:
+   upstream only colors list content #454545; we force it on
+   all descendants. Do not delete without visual verification.
+   ============================================================ */
+
+/* Light variant */
+.umd-text-rich-advanced {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced * {
+  color: #454545;
+}
+.umd-text-rich-advanced > * {
+  font-size: 18px;
+  margin-top: 24px;
+}
+.umd-text-rich-advanced > *:first-child {
+  margin-top: 0;
+}
+.umd-text-rich-advanced a {
+  color: #000000;
+  background-image: linear-gradient(#000000, #000000);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced a:hover,
+.umd-text-rich-advanced a:focus {
+  background-image: linear-gradient(#E21833, #E21833);
+}
+
+/* Dark variant */
+.umd-text-rich-advanced-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced-dark p,
+.umd-text-rich-advanced-dark li { color: #ffffff; }
+.umd-text-rich-advanced-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced-dark a:hover,
+.umd-text-rich-advanced-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   8. INTERIOR PAGE LAYOUT UTILITIES
+   ============================================================ */
+
+/* Content column max-width (Tailwind utility) */
+.max-w-\[800px\] { max-width: 800px; }
+
+
+/* ============================================================
+   9. IMAGE-EXPAND CONTENT UTILITIES
+   Classes for div[slot="content"] inside umd-layout-image-expand.
+   ============================================================ */
+.max-w-\[480px\] { max-width: 480px; }
+.w-full          { width: 100%; }
+.block           { display: block; }
+.mr-auto         { margin-right: auto; }
+.ml-auto         { margin-left: auto; }
+.pl-md           { padding-left: 24px; }
+
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text) { position: relative; }
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text)::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #E21833;
+  left: -24px;
+}
+
+/* Body copy on dark/image backgrounds — white text, animated underline links */
+.umd-text-rich-simple-large-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+  color: #ffffff;
+}
+.umd-text-rich-simple-large-dark * { color: #ffffff; }
+.umd-text-rich-simple-large-dark > * { font-size: 18px; margin-top: 24px; }
+.umd-text-rich-simple-large-dark > *:first-child { margin-top: 0; }
+.umd-text-rich-simple-large-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-simple-large-dark a:hover,
+.umd-text-rich-simple-large-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   10. STICKY COLUMNS UTILITIES
+   Spacing tokens for slot content inside umd-element-sticky-columns.
+   ============================================================ */
+.mb-md { margin-bottom: 24px; }
+.mb-sm { margin-bottom: 16px; }
+
+
+/* ============================================================
+   11. UTILITY NAVIGATION / SHELL-ITEM LINK STYLES
+   The shadow DOM ::slotted(*) only reaches div[slot="utility-navigation"],
+   NOT descendants — all link and separator styles must live here.
+
+   Canonical production pattern (matches umd.edu markup):
+   - Slot container: plain <div slot="utility-navigation">
+   - Each item: div.umd-shell-utility-item > div.umd-shell-utility-actions
+                > a.umd-sans-smaller (or button for dropdowns)
+   - Dropdown: sibling div.umd-shell-utility-links[aria-hidden] panel
+
+   TWO LAYERS — keep them separate:
+   A. BASE (unscoped) — the reusable .umd-shell-utility-item pattern.
+      Used in the nav-header utility slot AND reused in pathway /
+      banner-promo / section-intro action slots (RULES.md §5). These
+      rules MUST stay unscoped or the reuse renders unstyled.
+   B. NAV-HEADER (scoped) — overrides the shadow ::slotted(*) gap:24px
+      and adds dropdown anchoring + panel. Only meaningful in the slot.
+   ============================================================ */
+
+/* ---- A. BASE: reusable shell-item pattern (do NOT scope) ---- */
+.umd-shell-utility-item .umd-shell-utility-actions {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+.umd-shell-utility-item:not(:last-child) .umd-shell-utility-actions {
+  border-right: 1px solid #E6E6E6;
+  margin-right: 16px;
+  padding-right: 16px;
+}
+.umd-shell-utility-item a {
+  color: #242424;
+  text-decoration: none;
+}
+.umd-shell-utility-item a:hover,
+.umd-shell-utility-item a:focus {
+  color: #E21833;
+}
+
+/* ---- B. NAV-HEADER: scoped to the utility-navigation slot ---- */
+/* Override the shadow ::slotted(*) gap:24px (the wrapper margins above
+   handle item spacing in the shell pattern). */
+umd-element-navigation-header div[slot="utility-navigation"] {
+  gap: 0;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item {
+  position: relative;
+  z-index: 99999;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item button {
+  color: #242424;
+  text-decoration: none;
+}
+/* Dropdown panel (shown via JS toggling aria-hidden — see LAYOUT-PATTERNS.md) */
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links {
+  display: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links > * {
+  color: #242424;
+  display: block;
+  padding: 12px;
+  text-align: right;
+  text-decoration: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:hover,
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:focus {
+  color: #a90007;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links[aria-hidden="false"] {
+  align-items: flex-end;
+  background-color: #fafafa;
+  box-shadow: -1px 9px 32px -10px rgba(0, 0, 0, .19);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 16px;
+  width: 200px;
+  max-width: 80vw;
+}
+
+
+/* ============================================================
+   12. BANNER-PROMO STACKED ACTIONS — light-DOM column flex.
+   Pairs with the shadow-DOM injection in OVERRIDES.md so the 8px
+   gap is visible regardless of where children render.
+   ============================================================ */
+.banner-promo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+
+/* ============================================================
+   13. SECTION DIVIDER — standalone <hr> utility.
+   ============================================================ */
+.umd-text-divider {
+  border: none;
+  border-top: 1px solid #000000;
+  margin: 0 0 24px 0;
+}
+.umd-text-divider.dark {
+  border-top-color: #ffffff;
+}
+
+
+/* ============================================================
+   14. TRAILING-LINE LABEL — section eyebrow with horizontal line
+   Source: @universityofmaryland/web-styles-library: element.text.line.trailing
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-line-trailing / -light / -dark. This section is kept
+   as an intentional DELTA: we add font-weight: 700 (upstream
+   omits it) and use #000 for the dark background (upstream uses
+   #242424). Do not delete without visual verification.
+   ============================================================ */
+.umd-text-line-trailing,
+.umd-text-line-trailing-dark {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.42em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+.umd-text-line-trailing::before,
+.umd-text-line-trailing-dark::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 0;
+  width: 100vw;
+  height: 1px;
+  background: #000000;
+  z-index: 1;
+}
+.umd-text-line-trailing > span,
+.umd-text-line-trailing-dark > span {
+  position: relative;
+  background-color: inherit;
+  padding-right: 8px;
+  z-index: 2;
+}
+.umd-text-line-trailing + *,
+.umd-text-line-trailing-dark + * {
+  margin-top: 40px;
+}
+.umd-text-line-trailing-dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+.umd-text-line-trailing-dark::before {
+  background: #ffffff;
+}
+
+
+/* ============================================================
+   15. NOTE — GRID CLASSES FROM LAYOUT.MIN.CSS (CDN)
+   All standard grid classes are provided by layout.min.css loaded
+   from CDN in the <head>. Do NOT add them here — that duplicates CSS.
+
+   Available from CDN (layout.min.css):
+     umd-layout-grid-columns-two/three/four  — no-gap at tablet+
+     umd-layout-grid-gap-stacked/two/three/four  — 32px gap at all bp
+     umd-layout-grid-gap-two  — widens to 40px at 1024px
+     umd-layout-grid-child-fill-height  — height:100% on item + child
+     umd-layout-grid-inline-tablet-rows  — flex CTA row at 650px+
+     umd-layout-grid-masonry  — 2-col staggered (base CSS)
+     umd-layout-grid-offset-three  — 3-col staircase offset
+     umd-layout-grid-border-two/three/four  — bordered cell grids
+
+   Only add grid-related CSS here when it is genuinely absent from
+   layout.min.css (e.g. shellcraft-only classes like umd-animation-grid
+   and umd-shell-person-grid-helper padding).
+   ============================================================ */
+
+
+/* ============================================================
+   16. RETIRED — OVERLAY CARD .size-large MIN-HEIGHT
+   Now shipped verbatim by web-components.min.css (linked in
+   TEMPLATE.html): umd-element-card-overlay.size-large
+   {min-height: 320px; 560px @768px}. Section number reserved —
+   do NOT renumber later sections when retiring a rule.
+   ============================================================ */
+
+
+/* ============================================================
+   17. TUITION & AID 2-COLUMN GRID
+   Asymmetric content split: 1.5fr / 1fr at 1024px+.
+   ============================================================ */
+.umd-layout-grid-tuition-two {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .umd-layout-grid-tuition-two {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 80px;
+  }
+}
+
+
+/* ============================================================
+   18. FULL-WIDTH OUTLINE BUTTON — light-DOM utility class
+   Visually mirrors umd-element-call-to-action data-display="outline"
+   but stretches to fill its grid cell. Use when the DS web component's
+   shadow-DOM max-width:380px would fight against your layout.
+   ============================================================ */
+.umd-action-outline-block {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.28em;
+  text-align: center;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #242424;
+  color: #000000;
+  transition: background 0.5s ease-in-out, border 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+.umd-action-outline-block:hover,
+.umd-action-outline-block:focus {
+  background-color: #242424;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark {
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark:hover,
+.umd-action-outline-block.dark:focus {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+
+/* ============================================================
+   19. BORDER GRID — person-grid-helper container query + padding
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   Verified from: https://umd.edu/about/university-presidents
+
+   The base umd-layout-grid-border-two/three/four grid CSS is
+   provided by layout.min.css (CDN). Only the container query
+   setup and the umd-shell-person-grid-helper responsive padding
+   are absent from layout.min.css — those come from shellcraft.
+
+   Usage: add class="umd-shell-person-grid-helper" to every
+   umd-element-person host inside a border grid.
+   ============================================================ */
+
+/* Establishes named container for padding queries */
+[class*="umd-layout-grid-border-two"],
+[class*="umd-layout-grid-border-three"],
+[class*="umd-layout-grid-border-four"] {
+  container: umd-shell-person-grid-helper / inline-size;
+}
+
+/* Responsive cell padding (24px → 32px → 48px) */
+[class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+  padding: 24px;
+  transition: padding 0.5s ease-in-out;
+}
+@container umd-shell-person-grid-helper (min-width: 650px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 32px;
+  }
+}
+@container umd-shell-person-grid-helper (min-width: 1024px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 48px;
+  }
+}
+
+
+/* ============================================================
+   20. ANIMATION GRID — JS-driven scroll-reveal initial state
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   NOT in layout.min.css — must be here.
+
+   Sets children to invisible + translated as an initial state.
+   A JS scroll observer adds a class/style to reveal them in
+   sequence. Use on grid wrappers (offset grid, gap-stacked in
+   sticky-columns) to get the entrance animation.
+
+   Respects prefers-reduced-motion — no animation if reduced.
+
+   animation.min.css (linked in TEMPLATE.html) ships the same
+   initial state UNGUARDED (.umd-animation-grid > * always gets
+   opacity: 0) plus the fade-in-from-bottom keyframes and the
+   .umd-animation-transition-fade-bottom reveal class. The
+   reduce block below cancels the upstream rule so content is
+   never hidden for reduced-motion users.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .umd-animation-grid > * {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .umd-animation-grid > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+
+/* ============================================================
+   21. SLIDER OVERFLOW CONTAINMENT
+   umd-element-slider-events (and other carousel/slider components)
+   expand beyond the viewport during transitions, causing horizontal
+   scroll at the document level. overflow: hidden on the section
+   alone is not sufficient.
+
+   clip (not hidden) is intentional: overflow-x: hidden promotes
+   the element to a scroll container, which breaks scroll-driven
+   animations (animation-timeline: scroll()) and shifts
+   IntersectionObserver offsets. overflow-x: clip suppresses
+   the scroll bar without creating a scroll container.
+   ============================================================ */
+body { overflow-x: clip; }
+
+
+/* ============================================================
+   22. DARK → LIGHT SECTION TRANSITION GAP
+   When a full-bleed dark section (.umd-layout-background-full-dark)
+   is immediately followed by a default/light section, inject 120px
+   of white breathing room between them.
+
+   Conditional: dark-after-dark gets no extra gap — the adjacent
+   sibling selector only fires when the following section lacks the
+   dark class. Add overflow: hidden to the dark section if its
+   content bleeds into this gap.
+   ============================================================ */
+.umd-layout-background-full-dark + section:not(.umd-layout-background-full-dark) {
+  margin-top: 120px;
+}
+
+
+/* ============================================================
+   23. FILTER BAND COMPANIONS — page-built pieces of the
+   filterable-listing pattern (see LAYOUT-PATTERNS.md "Filter
+   Band"). The band itself uses upstream classes
+   (umd-layout-background-highlight-light, umd-text-line-trailing-
+   light, umd-field-select-wrapper, umd-animation-line-slide-*,
+   sr-only — element/animation/accessibility bundles). Only the
+   search row, results count, and divider list below are absent
+   upstream. Behavior comes from scripts/filter-band.js.
+   ============================================================ */
+.umd-filter-search-row {
+  display: flex;
+  align-items: stretch;
+}
+.umd-filter-search-row input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.375em;
+  border: 1px solid #c0c0c0;
+  border-right: none;
+  color: #242424;
+  background: #fff;
+  min-width: 0;
+}
+.umd-filter-search-row input[type="text"]:focus {
+  outline: 2px solid #E21833;
+  outline-offset: 0;
+}
+.umd-filter-search-btn {
+  background-color: #E21833;
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+.umd-filter-search-btn:hover,
+.umd-filter-search-btn:focus {
+  background-color: #a90007;
+  outline: none;
+}
+.umd-filter-search-btn svg {
+  fill: #fff;
+  width: 20px;
+  height: 20px;
+}
+.umd-filter-results-count {
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  color: #454545;
+  margin: 24px 0 0;
+}
+
+/* Divider list — zero-gap stack with rules between visible items */
+.umd-filter-list {
+  gap: 0 !important;
+  margin-top: 56px;
+}
+.umd-filter-list > .umd-filter-item {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #d0d0d0;
+}
+.umd-filter-list > .umd-filter-item + .umd-filter-item {
+  padding-top: 24px;
+}
+.umd-filter-list > .umd-filter-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.umd-filter-list > .umd-filter-item[hidden] + .umd-filter-item {
+  padding-top: 0;
+}
+.umd-filter-item[hidden] { display: none !important; }
+  </style>
+
+  <style>
+/* ============================================================
+   PAGE-SPECIFIC — We Reimagine Learning (commitment page)
+   Modal panel content styles. umd-element-modal provides the
+   backdrop + focus management; the slotted .sp-modal-panel is
+   light DOM and fully styled here (white box, red top rule,
+   close button, image, title, eyebrow).
+   ============================================================ */
+/* Header→hero gap parity with principles.html (see hero section comment). */
+.sp-hero-offset {
+  padding-top: 48px;
+}
+
+.sp-modal-panel {
+  position: relative;
+  background: #ffffff;
+  border-top: 4px solid #E21833;
+  /* Width matches the small lock (.umd-layout-space-horizontal-small: 992px).
+     The modal backdrop supplies its own outer padding (10vh 10vw at tablet+). */
+  width: 100%;
+  max-width: 992px;
+  max-height: min(84vh, 900px);
+  overflow-y: auto;
+  margin: 0 auto;
+  padding: 48px 32px 32px;
+}
+@media (min-width: 768px) {
+  .sp-modal-panel { padding: 56px; }
+}
+.sp-modal-panel > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 32px;
+}
+.sp-modal-eyebrow {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #E21833;
+  margin-bottom: 8px;
+}
+/* Type comes from .umd-sans-extralarge-bold (typography.min.css); this only spaces it. */
+.sp-modal-title {
+  color: #000000;
+  margin-bottom: 16px;
+}
+.sp-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.sp-modal-close svg { fill: #000000; }
+.sp-modal-close:hover svg,
+.sp-modal-close:focus svg { fill: #E21833; }
+
+/* Bulleted lists inside modal rich text — upstream rich-advanced
+   covers paragraphs/links; give lists the same rhythm. */
+.sp-modal-panel .umd-text-rich-advanced ul {
+  padding-left: 24px;
+  list-style: disc;
+}
+.sp-modal-panel .umd-text-rich-advanced li {
+  margin-top: 16px;
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.sp-modal-panel .umd-text-rich-advanced li:first-child { margin-top: 0; }
+  </style>
+
+  <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
+</head>
+<body>
+
+  <!-- 1. GLOBAL UNIVERSITY HEADER -->
+  <umd-element-navigation-utility data-alert-off="true" role="navigation" aria-label="Utility navigation"></umd-element-navigation-utility>
+  <umd-element-utility-header></umd-element-utility-header>
+
+  <!-- 2. SITE NAVIGATION HEADER -->
+  <umd-element-navigation-header
+    sticky
+    class="umd-layout-space-horizontal-full">
+    <a slot="logo" href="../index.html">
+      <img src="../../images/logos/strategic-plan-logo.svg" alt="University of Maryland Strategic Plan"
+           onerror="this.onerror=null;this.src='../../images/logos/primary-logo-dark.svg';" />
+    </a>
+    <nav slot="main-navigation">
+      <umd-element-nav-item>
+        <a slot="primary-link" href="../principles.html">Guiding Principles</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="../strategic-commitments.html">Strategic Commitments</a>
+        <div slot="dropdown-links">
+          <a href="we-reimagine-learning.html">We Reimagine Learning</a>
+          <a href="we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="we-invest-in-people-and-communities.html">We Invest in People and Communities</a>
+          <a href="we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a>
+        </div>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="../implementation.html">Implementation</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="../metrics.html">Metrics</a>
+      </umd-element-nav-item>
+    </nav>
+    <div slot="primary-slide-links">
+      <a href="../principles.html"><span>Guiding Principles</span></a>
+      <a href="../strategic-commitments.html" data-child-ref="strategic-commitments"><span>Strategic Commitments</span></a>
+      <a href="../implementation.html"><span>Implementation</span></a>
+      <a href="../metrics.html"><span>Metrics</span></a>
+    </div>
+    <div slot="children-slides">
+      <div data-parent-ref="strategic-commitments">
+        <a href="we-reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="we-take-on-humanitys-grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="we-invest-in-people-and-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="we-partner-to-advance-the-public-good.html"><span>We Partner to Advance the Public Good</span></a>
+      </div>
+    </div>
+  </umd-element-navigation-header>
+
+  <main>
+
+    <!-- 3. HERO — stacked, eyebrow + centered text + image (same attribute set as principles.html).
+         sp-hero-offset: the stacked hero reduces its internal top padding from
+         80px to 32px when an image is slotted (no attribute overrides this) —
+         pad the section by the 48px difference for gap parity with principles. -->
+    <section class="umd-layout-vertical-landing sp-hero-offset">
+      <umd-element-hero data-display="stacked" data-layout-space-horizontal="large" data-layout-height="small" data-animation="true" data-layout-position="80">
+        <img slot="image" src="../../images/commitment/hero-reimagine-learning.jpg" alt="Synapto brain research display and student at the A. James Clark Hall Open House." />
+        <p slot="eyebrow">Strategic Commitments</p>
+        <h1 slot="headline">We Reimagine Learning</h1>
+        <div slot="text">
+          <p>We reimagine learning and teaching as inclusive, experiential, publicly engaged, creative, integrative, holistic, and empowering.</p>
+        </div>
+      </umd-element-hero>
+    </section>
+
+    <!-- 4. FEARLESSLY FORWARD INITIATIVES — section intro with red separator -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-section-intro include-separator>
+        <h2 slot="headline">Fearlessly Forward Initiatives</h2>
+      </umd-element-section-intro>
+    </section>
+
+    <!-- 5. INITIATIVE — Teaching Innovation Grants (image left) -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="left">
+        <img slot="image" src="../../images/commitment/initiative-teaching-innovation-grants.jpg" alt="A group works in an ESJ Academy Loft" />
+        <h3 slot="headline">Teaching Innovation Grants</h3>
+        <div slot="text">
+          <p>The University of Maryland's <a href="https://tltc.umd.edu/grants">Teaching Innovation Grants</a> support innovative educational projects designed to prepare our students with effective, engaging, and enriching learning experiences.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <button type="button" data-modal-target="modal-teaching-innovation-grants">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+              Details
+            </button>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 6. INITIATIVE — Arts for All (image right) -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="right">
+        <img slot="image" src="../../images/commitment/initiative-arts-for-all.jpg" alt="Actors on stage with purple illumination in the background, one performer in a dramatic pose, looking into the distance and both hands flaring a cape behind them" />
+        <h3 slot="headline">Arts for All</h3>
+        <div slot="text">
+          <p>The <a href="https://arts.umd.edu/">Arts for All</a> initiative partners the arts with the sciences, technology and other disciplines to develop new and reimagined curricular and experiential offerings that nurture different ways of thinking to spark dialogue, understanding, problem solving and action.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <button type="button" data-modal-target="modal-arts-for-all">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+              Details
+            </button>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 7. INITIATIVE — Learning Environment Modernization (image left) -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="left">
+        <img slot="image" src="../../images/commitment/initiative-learning-environment-modernization.jpg" alt="Students working in the Michael Antonov Auditorium in the Brendan Iribe Center for Computer Science and Engineering." />
+        <h3 slot="headline">Learning Environment Modernization</h3>
+        <div slot="text">
+          <p>The University of Maryland is accelerating the expansion and development of accessible, smart, and learner-centered environments to support innovative pedagogical practices, foster students' creativity and enable collaboration.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <button type="button" data-modal-target="modal-learning-environment-modernization">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+              Details
+            </button>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 8. INITIATIVE — Office of Undergraduate Research (image right) -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="right">
+        <img slot="image" src="../../images/commitment/initiative-office-of-undergraduate-research.jpg" alt="Student conducting research in a lab" />
+        <h3 slot="headline">Office of Undergraduate Research</h3>
+        <div slot="text">
+          <p>The <a href="https://www.our.umd.edu/">Office of Undergraduate Research</a> collaborates with students, faculty and staff across departments to broaden the culture and community around undergraduate research and scholarly activities campuswide.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <button type="button" data-modal-target="modal-office-of-undergraduate-research">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+              Details
+            </button>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 9. INITIATIVE — Investing in Special Undergraduate Programs (image left) -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="left">
+        <img slot="image" src="../../images/commitment/initiative-special-undergraduate-programs.jpg" alt="Students at their internship in the Global and Federal Fellows Program" />
+        <h3 slot="headline">Investing in Special Undergraduate Programs</h3>
+        <div slot="text">
+          <p>The University of Maryland has been nationally recognized for our undergraduate teaching and learning communities, and much of that comes from our investments in special undergraduate programs.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <button type="button" data-modal-target="modal-special-undergraduate-programs">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+              Details
+            </button>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <!-- 10. STRATEGIC COMMITMENT GOALS — heading + 3 no-gap overlay cards -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <div class="umd-layout-vertical-landing-child">
+          <h2 class="umd-sans-largest-uppercase">Strategic Commitment Goals</h2>
+        </div>
+        <div class="umd-layout-grid-columns-three umd-animation-grid">
+
+          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
+            <img slot="image" src="../../images/commitment/goal-1-innovative-inclusive-teaching.jpg" alt="A professor and two students stand in front of a stationary bike and a monitor, discussing an engineering project." />
+            <h3 slot="headline">Goal 1</h3>
+            <p slot="text">Lead in the development of innovative and inclusive approaches for teaching and learning.</p>
+            <a slot="cta-icon" href="#modal-goal-1" data-modal-target="modal-goal-1" aria-label="Goal 1 objectives">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+            </a>
+          </umd-element-card-overlay>
+
+          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
+            <img slot="image" src="../../images/commitment/goal-2-experiential-learning.jpg" alt="Architecture students in a design course" />
+            <h3 slot="headline">Goal 2</h3>
+            <p slot="text">Expand the use of high-impact experiential learning to ensure every student has the opportunity to learn through public service, civic engagement, internships, and project-based experiences.</p>
+            <a slot="cta-icon" href="#modal-goal-2" data-modal-target="modal-goal-2" aria-label="Goal 2 objectives">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+            </a>
+          </umd-element-card-overlay>
+
+          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
+            <img slot="image" src="../../images/commitment/goal-3-multidisciplinary-collaboration.jpg" alt="A. James Clark School of Engineering Alumni Cup student competition held in the atrium area of the Kim Engineering Building." />
+            <h3 slot="headline">Goal 3</h3>
+            <p slot="text">Create opportunities for multidisciplinary collaboration that fosters creative expression, discovery, and critical thinking.</p>
+            <a slot="cta-icon" href="#modal-goal-3" data-modal-target="modal-goal-3" aria-label="Goal 3 objectives">
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M7 1h2v6h6v2H9v6H7V9H1V7h6z"/></svg>
+            </a>
+          </umd-element-card-overlay>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. CTA BAR — banner-promo, default gold theme (same as index/principles) -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-banner-promo>
+          <p slot="text"><strong>FEARLESSLY FORWARD IN PURSUIT OF EXCELLENCE AND IMPACT FOR THE PUBLIC GOOD:</strong> THE UNIVERSITY OF MARYLAND STRATEGIC PLAN is a living document and will evolve and grow as we do. Please visit this site to follow our progress as we move fearlessly forward.</p>
+          <div slot="actions" class="banner-promo-actions">
+            <umd-element-call-to-action data-display="primary">
+              <a href="https://issuu.com/umaryland/docs/strategicplan2022?fr=sNDZhNTQ2MzkxOTM" target="_blank" rel="noopener">View Digital PDF (Issuu)</a>
+              <a href="https://strategic-plan.files.svdcdn.com/production/file/strategic-plan-text-2022-b.txt?dm=1699301204" slot="text" target="_blank" rel="noopener">Text Version</a>
+            </umd-element-call-to-action>
+          </div>
+        </umd-element-banner-promo>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MODALS — umd-element-modal, opened via [data-modal-target]
+         Initiative modals repeat the row image + title, then long-form
+         detail copy. Goal modals have no image: index + title + objectives.
+         ============================================================ -->
+
+    <umd-element-modal id="modal-teaching-innovation-grants" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <img src="../../images/commitment/initiative-teaching-innovation-grants.jpg" alt="A group works in an ESJ Academy Loft" />
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Teaching Innovation Grants</h3>
+        <div class="umd-text-rich-advanced">
+          <p>Each cycle of Teaching Innovation Grants focuses on a different theme in support of our commitment to reimagine learning at UMD.</p>
+          <ul>
+            <li><strong>Active and experiential learning</strong>: In Spring 2022, UMD launched a round of grants to support innovative educational projects focused on expanding active and experiential learning. Through the grants, a total of 115 projects were <a href="https://today.umd.edu/from-bugs-to-bronze-age-nearly-300-courses-get-creative-boost">awarded</a> totalling $2.7 million, directly impacting 19,171 students-seats, 296 courses, and 86 academic programs. The <a href="https://new.express.adobe.com/webpage/s4fTNBmd1DiAS">report on the 2022 initiative</a> demonstrates the program's broad impact, highlights and remarkable accomplishments. Survey data show an overwhelmingly positive response from our students concerning their course experience.</li>
+            <li><strong>Intersection of education and technology</strong>: The 2023 grant program awarded funding to projects that use innovative educational technology to create more effective, engaging, and inclusive learning experiences that prepare our students to navigate a technology-rich world. The program awarded $1.3 million in grants to 24 projects to emphasize the intersection of education and technology, including AI, virtual reality and gamification. In all, the grants are projected to bolster 73 courses with over 32,000 student seats across 10 academic units.</li>
+            <li><strong>Inclusive and accessible teaching</strong>: The current <a href="https://tltc.umd.edu/grants25">Teaching Innovation Grants cycle</a> will support course-based projects that maximize student engagement through accessible and inclusive pedagogical practices.</li>
+          </ul>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-arts-for-all" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <img src="../../images/commitment/initiative-arts-for-all.jpg" alt="Actors on stage with purple illumination in the background" />
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Arts for All</h3>
+        <div class="umd-text-rich-advanced">
+          <p><a href="https://arts.umd.edu/">Arts for All</a> works toward three major goals:</p>
+          <ul>
+            <li>Making the arts more accessible to and representative of our community</li>
+            <li>Placing the arts in dialogue with the sciences and technology</li>
+            <li>Leveraging the community-building and community-sustaining power of the arts</li>
+          </ul>
+          <p>Arts for All has expanded and enhanced academic, campus and community programs since its inception. In 2024, Arts for All saw notable growth in the undergraduate minor in Arts Leadership and undergraduate major in Immersive Media Design&ndash;which has more than doubled in just two years. Two additional academic programs include the Creative Placemaking minor and post-baccalaureate certificate in Arts Management. In addition, The New Works Incubator, part of the Immersive Media Design program, has steadily increased in size, nearly doubling its enrollment since 2022.</p>
+          <p>Arts for All awarded 51 grants totaling $202,940 in 2024, up from 23 grants and $82,000 in 2023. These grants supported student and faculty research and activities across 10 colleges, and included funding collaborations with the Do Good Campus Fund and the Division of Research. Arts for All also created the inaugural cohort of 10 faculty and 5 graduate student Arts for All Fellows and provided support for two artists-in-residence in 2024.</p>
+          <p>The annual NextNOW Festival saw a 68% increase in attendance in 2024 with more than 6,750 individuals across 50 events.</p>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-learning-environment-modernization" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <img src="../../images/commitment/initiative-learning-environment-modernization.jpg" alt="Students working in the Michael Antonov Auditorium in the Brendan Iribe Center for Computer Science and Engineering." />
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Learning Environment Modernization</h3>
+        <div class="umd-text-rich-advanced">
+          <p>New changes to classrooms are expanding opportunities for instructors and students for active and engaged learning. This includes:</p>
+          <ul>
+            <li>New hybrid-flexible classrooms to allow in-person and remote students to interact seamlessly</li>
+            <li>New TERP classrooms that expand collaborative, student-centered, team-based modes of teaching and learning</li>
+            <li>New student lounge/informal learning spaces have been created in key academic buildings with high classroom densities</li>
+            <li>Several computer lab and classroom technology upgrades</li>
+          </ul>
+          <p>Through an investment of more than $11 million, the Learning Environment Modernization program has completed nearly 140 projects to-date, impacting more than 75,000 student seats.</p>
+          <p>In 2024, a record number (42) of classrooms across all regions of campus were renovated, and 46 classrooms received AV system upgrades. In addition to the formal teaching spaces, informal study spaces in three academic buildings were created to meet the growing demand for accessible student lounge space.</p>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-office-of-undergraduate-research" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <img src="../../images/commitment/initiative-office-of-undergraduate-research.jpg" alt="Student conducting research in a lab" />
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Office of Undergraduate Research</h3>
+        <div class="umd-text-rich-advanced">
+          <p>The Office of Undergraduate Research (OUR) offers a range of resources and programs to help all undergraduates start or advance their research, and allows faculty members, academic units, and existing programs to support and coordinate research engagement.</p>
+          <p>In 2024, OUR designed and launched two major events, Undergraduate Research Day and the Summer Undergraduate Research Conference, allowing nearly 600 undergraduate students from a broad range of campus disciplines to communicate their research outcomes.</p>
+          <p>In the summer of 2024, OUR operated the Immersive Research Internship Experience and the Student-Proposed Innovation &amp; Research Experience, serving 130 undergraduate students. OUR continues to oversee The First-Year Innovation &amp; Research Experience, driving high levels of authentic research engagement and career readiness in more than 1,200 early-matriculation undergraduate students, annually.</p>
+          <p>As the result of a Teaching Innovation Grant award received in 2023, OUR developed and deployed high-quality open-access educational materials to empower students of broad backgrounds to begin university research. Undergraduate Research Opportunities and Competencies was launched in September of 2024 and currently has over 900 undergraduate students enrolled.</p>
+          <p>OUR began designing and delivering the first in a series of workshops focused on helping undergraduates pursue research opportunities. The first workshop, focused on National Science Foundation Research Experiences for Undergraduates, had more than 100 students attend.</p>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-special-undergraduate-programs" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <img src="../../images/commitment/initiative-special-undergraduate-programs.jpg" alt="Students at their internship in the Global and Federal Fellows Program" />
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Investing in Special Undergraduate Programs</h3>
+        <div class="umd-text-rich-advanced">
+          <p>The University of Maryland's special undergraduate programs, including its signature living-learning programs, have been enhanced to provide more opportunities that foster learning inside and outside of the classroom.</p>
+          <p>The Honors College has added two new programs. Interdisciplinary Business Honors, a partnership with the Smith School, challenges students to imagine the future of work and business across fields and in connection with the grand challenges of our time. Honors Global Challenges and Solutions, a partnership with the College of Behavioral and Social Sciences, draws on social data science to critically examine a wide range of global problems, with the opportunity for policy internships in the Washington, D.C., area. In addition, new investments help to secure the future of the ACES cybersecurity program.</p>
+          <p>College Park Scholars has also added two new programs. In Civic Engagement for Social Good (previously known as CIVICUS), a partnership with the College of Behavioral and Social Sciences, students work with organizations addressing a range of contemporary societal challenges. Data Justice, a partnership with the College of Information, provides students an opportunity to interrogate the biases that are built into information collection, design, and analysis. In addition, College Park Scholars is undertaking a range of new initiatives across all its programs, including curricula, alumni engagement, diversity, and community engagement.</p>
+          <p>New investments in some of the university's longest-standing living-learning communities enable developments within and across College of Arts and Humanities programs, including Design Cultures &amp; Creativity and Honors Humanities (both in the Honors College); Arts (College Park Scholars); Language House, in which residents develop fluency in a target language and its culture; and Jim&eacute;nez-Porter Writers' House, a literary center for the study of creative writing across cultures and languages.</p>
+          <p>The UMD Fellows Program equips diverse, civically-minded undergraduate students from all majors to pursue impactful careers, particularly in the public sector. The UMD Fellows Program launched the Maryland Fellows branch, emphasizing state and local public service, with students interning at the Maryland General Assembly. Additionally, the program introduced a new concentration: Strategic Thinking, AI, and Innovation Power.</p>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-goal-1" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <p class="sp-modal-eyebrow">Goal 1</p>
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Lead in the development of innovative and inclusive approaches for teaching and learning.</h3>
+        <div class="umd-text-rich-advanced">
+          <p><strong>Objectives</strong></p>
+          <ul>
+            <li>Expand accessibility of our educational programs through equitable, flexible, inclusive approaches to instructional design and delivery.</li>
+            <li>Rethink and reconfigure our learning environments to balance, integrate, and leverage universal design, technology-rich education, and human connection.</li>
+            <li>Unlock the potential of our campus as a green, connected living-learning environment that is open and accessible to the global community.</li>
+            <li>Imagine new possibilities for advancing lifelong learning with technology and new forms of engagement for learners of all ages.</li>
+          </ul>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-goal-2" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <p class="sp-modal-eyebrow">Goal 2</p>
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Expand the use of high-impact experiential learning to ensure every student has the opportunity to learn through public service, civic engagement, internships, and project-based experiences.</h3>
+        <div class="umd-text-rich-advanced">
+          <p><strong>Objectives</strong></p>
+          <ul>
+            <li>Provide opportunities throughout the educational journey for internships, research experiences, and other applied learning experiences.</li>
+            <li>Develop and coordinate volunteer and civic engagement opportunities and encourage undergraduate and graduate students to engage in work in support of the public good.</li>
+            <li>Grow events and programs that enable students to connect with local community members, organizations, and businesses for civic development, employment, and other forms of learning.</li>
+          </ul>
+        </div>
+      </div>
+    </umd-element-modal>
+
+    <umd-element-modal id="modal-goal-3" data-layout-hidden="true">
+      <div class="sp-modal-panel" slot="content">
+        <button type="button" class="sp-modal-close" data-modal-close aria-label="Close dialog">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M2.4 1 8 6.6 13.6 1 15 2.4 9.4 8l5.6 5.6-1.4 1.4L8 9.4 2.4 15 1 13.6 6.6 8 1 2.4z"/></svg>
+        </button>
+        <p class="sp-modal-eyebrow">Goal 3</p>
+        <h3 class="sp-modal-title umd-sans-extralarge-bold">Create opportunities for multidisciplinary collaboration that fosters creative expression, discovery, and critical thinking.</h3>
+        <div class="umd-text-rich-advanced">
+          <p><strong>Objectives</strong></p>
+          <ul>
+            <li>Build partnerships among the arts, humanities, science, technology, and other disciplines to develop new curricular and experiential offerings that nurture different ways of thinking to spark dialogue, understanding, problem solving, and action.</li>
+            <li>Support indoor and outdoor spaces on campus to advance learning, inspire discovery, and activate creativity.</li>
+          </ul>
+        </div>
+      </div>
+    </umd-element-modal>
+
+  </main>
+
+  <!-- FOOTER -->
+  <umd-element-footer data-display="visual">
+    <a slot="logo" href="https://strategicplan.umd.edu/">
+      <img src="../../images/logos/footer-logo.svg" alt="University of Maryland Strategic Plan" />
+    </a>
+    <img slot="image" src="../../images/strategic-plan/footer.png" alt="University of Maryland campus" />
+  </umd-element-footer>
+
+  <!-- GRID ENTRY ANIMATIONS — shared canonical script -->
+  <script src="../../page-builder/scripts/grid-animations.js"></script>
+
+  <!-- NAV-HEADER LOGO WIDTH — shadow injection for strategic plan wordmark -->
+  <script>
+    (function () {
+      function inject(el) {
+        if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
+        el.__navHeaderLogoInjected = true;
+        var style = document.createElement('style');
+        style.textContent = '.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }';
+        el.shadowRoot.appendChild(style);
+      }
+      document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      customElements.whenDefined('umd-element-navigation-header').then(function () {
+        document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      });
+    })();
+  </script>
+
+  <!-- MODAL WIRING — open/close umd-element-modal via observed attributes -->
+  <script>
+    (function () {
+      var lastTrigger = null;
+
+      // umd-element-modal v1.18.12 observes data-layout-hidden: the true→false
+      // transition shows the modal, false→true hides it. (The registry's
+      // data-visual-open/-closed contract is not implemented in this version.)
+      // The component handles the backdrop click + focus trap itself and resets
+      // data-layout-hidden="true" when it closes internally.
+      function openModal(modal, trigger) {
+        lastTrigger = trigger || null;
+        modal.setAttribute('data-layout-hidden', 'false');
+      }
+
+      function closeModal(modal) {
+        modal.setAttribute('data-layout-hidden', 'true');
+        if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
+      }
+
+      // Triggers may be cloned into a component's shadow DOM (umd-element-call-to-action
+      // clones its child button; card-overlay clones the cta-icon anchor), which retargets
+      // e.target to the host. composedPath() sees through open shadow roots.
+      function findInPath(e, attr) {
+        var path = e.composedPath ? e.composedPath() : [e.target];
+        for (var i = 0; i < path.length; i++) {
+          var n = path[i];
+          if (n.nodeType === 1 && n.hasAttribute && n.hasAttribute(attr)) return n;
+        }
+        return null;
+      }
+
+      document.addEventListener('click', function (e) {
+        var trigger = findInPath(e, 'data-modal-target');
+        if (trigger) {
+          e.preventDefault();
+          var modal = document.getElementById(trigger.getAttribute('data-modal-target'));
+          if (modal) openModal(modal, trigger);
+          return;
+        }
+        var closer = findInPath(e, 'data-modal-close');
+        if (closer) {
+          var openParent = closer.closest('umd-element-modal') || document.querySelector('umd-element-modal[data-layout-hidden="false"]');
+          if (openParent) closeModal(openParent);
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        document.querySelectorAll('umd-element-modal[data-layout-hidden="false"]').forEach(closeModal);
+      });
+    })();
+  </script>
+
+</body>
+</html>

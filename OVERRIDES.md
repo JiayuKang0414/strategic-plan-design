@@ -42,6 +42,29 @@ Custom full-bleed section on `pages/index.html`. Four overlapping circles in bra
 
 Pages using this: `pages/index.html`.
 
+## Pathway light panels — use the overlay variant, not a standard-pathway injection
+
+For light pathways with the grey offset panel (strategic-plan commitment pages), use `umd-element-pathway data-display="overlay" data-theme="light"` with an explicit `data-layout-image-position` (`left` or `right`). The overlay variant is self-contained (paints its own light-gray panel — see page-builder RULES.md §5) and ships the scroll-triggered panel entrance animation (`animation-timeline: view()`).
+
+**`data-animation` gotcha:** animation is ON by default when the attribute is absent. A bare `data-animation` (empty value) reads as *not "true"* and **disables** it. Omit the attribute entirely (or use `data-animation="false"` to opt out, as with `umd-element-quote` on index.html).
+
+Do **not** shadow-inject a panel onto the standard (no `data-display`) pathway — `data-theme="light"` is a no-op there in cdn.js v1.18.12 and an injection was previously needed; the overlay variant replaced it.
+
+**Pages using this:** `pages/commitment/we-reimagine-learning.html` (all five initiative pathways).
+
+## Modal (`umd-element-modal`) — actual v1.18.12 contract differs from registry
+
+`registry/registry-layout.json` documents the default slot and `data-visual-open`/`data-visual-closed` observed attributes. **Neither is implemented in cdn.js v1.18.12.** The real contract:
+
+- Content must be a child with **`slot="content"`** — the component renders `<slot name="content">` inside its backdrop; unslotted children never display.
+- Show/hide is driven by **`data-layout-hidden`**: the `true → false` transition opens, `false → true` closes. Start with `data-layout-hidden="true"`.
+- The component provides the fixed backdrop (`rgba(0,0,0,0.9)`), backdrop-click close, focus trap, and body scroll lock. It resets `data-layout-hidden="true"` when it closes itself.
+- The slotted panel is unstyled light DOM — the page provides the white box, red top rule, close button, title/eyebrow styles (`.sp-modal-panel`, `.sp-modal-title`, `.sp-modal-eyebrow`, `.sp-modal-close` on `pages/commitment/we-reimagine-learning.html`).
+
+**Trigger gotcha:** `umd-element-call-to-action` and `umd-element-card-overlay` (cta-icon slot) **clone** their child link/button into shadow DOM, so document-level click delegation via `e.target.closest(...)` never sees the trigger — walk `e.composedPath()` instead (see the modal-wiring script on the page).
+
+**Pages using this:** `pages/commitment/we-reimagine-learning.html` (5 initiative Details modals + 3 goal Objectives modals).
+
 ## Pathway sticky (first pathway)
 
 The first `umd-element-pathway` on `pages/index.html` is sticky (scrolls with the viewport until it reaches its scroll boundary). Standard pathway component with `position: sticky` applied via a wrapper or shadow injection as needed.

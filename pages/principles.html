@@ -752,10 +752,10 @@ body { overflow-x: clip; }
       <umd-element-nav-item>
         <a slot="primary-link" href="strategic-commitments.html">Strategic Commitments</a>
         <div slot="dropdown-links">
-          <a href="strategic-commitments/reimagine-learning.html">We Reimagine Learning</a>
-          <a href="strategic-commitments/grand-challenges.html">We Take On Humanity's Grand Challenges</a>
-          <a href="strategic-commitments/people-communities.html">We Invest in People and Communities</a>
-          <a href="strategic-commitments/public-good.html">We Partner to Advance the Public Good</a>
+          <a href="commitment/we-reimagine-learning.html">We Reimagine Learning</a>
+          <a href="commitment/we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="commitment/we-invest-in-people-and-communities.html">We Invest in People and Communities</a>
+          <a href="commitment/we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a>
         </div>
       </umd-element-nav-item>
       <umd-element-nav-item>
@@ -773,10 +773,10 @@ body { overflow-x: clip; }
     </div>
     <div slot="children-slides">
       <div data-parent-ref="strategic-commitments">
-        <a href="strategic-commitments/reimagine-learning.html"><span>We Reimagine Learning</span></a>
-        <a href="strategic-commitments/grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
-        <a href="strategic-commitments/people-communities.html"><span>We Invest in People and Communities</span></a>
-        <a href="strategic-commitments/public-good.html"><span>We Partner to Advance the Public Good</span></a>
+        <a href="commitment/we-reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="commitment/we-take-on-humanitys-grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="commitment/we-invest-in-people-and-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="commitment/we-partner-to-advance-the-public-good.html"><span>We Partner to Advance the Public Good</span></a>
       </div>
     </div>
   </umd-element-navigation-header>
@@ -785,7 +785,7 @@ body { overflow-x: clip; }
 
     <!-- 3. HERO — stacked, no image, light background -->
     <section class="umd-layout-vertical-landing">
-      <umd-element-hero data-display="stacked">
+      <umd-element-hero data-display="stacked" data-layout-space-horizontal="large" data-layout-height="small" data-animation="true" data-layout-position="80">
         <h1 slot="headline">Our Guiding Principles</h1>
         <p slot="text">We must be united in our noble and fearless purpose, because celebrating differences and leveling societal inequities must be among our greatest strengths, because grand challenges demand fearless ideas, and because progress will not be measured in individual achievement, but in our collective accomplishments.</p>
       </umd-element-hero>
@@ -876,7 +876,7 @@ body { overflow-x: clip; }
         if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
         el.__navHeaderLogoInjected = true;
         var style = document.createElement('style');
-        style.textContent = '.element-header-logo img { max-width: 320px !important; }';
+        style.textContent = '.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }';
         el.shadowRoot.appendChild(style);
       }
       document.querySelectorAll('umd-element-navigation-header').forEach(inject);

@@ -925,15 +925,15 @@ body { overflow-x: clip; }
     </a>
     <nav slot="main-navigation">
       <umd-element-nav-item>
-        <a slot="primary-link" href="guiding-principles.html">Guiding Principles</a>
+        <a slot="primary-link" href="principles.html">Guiding Principles</a>
       </umd-element-nav-item>
       <umd-element-nav-item>
         <a slot="primary-link" href="strategic-commitments.html">Strategic Commitments</a>
         <div slot="dropdown-links">
-          <a href="strategic-commitments/reimagine-learning.html">We Reimagine Learning</a>
-          <a href="strategic-commitments/grand-challenges.html">We Take On Humanity's Grand Challenges</a>
-          <a href="strategic-commitments/people-communities.html">We Invest in People and Communities</a>
-          <a href="strategic-commitments/public-good.html">We Partner to Advance the Public Good</a>
+          <a href="commitment/we-reimagine-learning.html">We Reimagine Learning</a>
+          <a href="commitment/we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="commitment/we-invest-in-people-and-communities.html">We Invest in People and Communities</a>
+          <a href="commitment/we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a>
         </div>
       </umd-element-nav-item>
       <umd-element-nav-item>
@@ -944,17 +944,17 @@ body { overflow-x: clip; }
       </umd-element-nav-item>
     </nav>
     <div slot="primary-slide-links">
-      <a href="guiding-principles.html"><span>Guiding Principles</span></a>
+      <a href="principles.html"><span>Guiding Principles</span></a>
       <a href="strategic-commitments.html" data-child-ref="strategic-commitments"><span>Strategic Commitments</span></a>
       <a href="implementation.html"><span>Implementation</span></a>
       <a href="metrics.html"><span>Metrics</span></a>
     </div>
     <div slot="children-slides">
       <div data-parent-ref="strategic-commitments">
-        <a href="strategic-commitments/reimagine-learning.html"><span>We Reimagine Learning</span></a>
-        <a href="strategic-commitments/grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
-        <a href="strategic-commitments/people-communities.html"><span>We Invest in People and Communities</span></a>
-        <a href="strategic-commitments/public-good.html"><span>We Partner to Advance the Public Good</span></a>
+        <a href="commitment/we-reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="commitment/we-take-on-humanitys-grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="commitment/we-invest-in-people-and-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="commitment/we-partner-to-advance-the-public-good.html"><span>We Partner to Advance the Public Good</span></a>
       </div>
     </div>
   </umd-element-navigation-header>
@@ -1005,16 +1005,16 @@ body { overflow-x: clip; }
           <h2 slot="headline">Our Strategic Commitments</h2>
         </umd-element-section-intro>
         <div class="sp-venn-diagram" role="figure" aria-label="Strategic Commitments: four areas — We Reimagine Learning, We Take On Humanity's Grand Challenges, We Invest in People and Communities, and We Partner to Advance the Public Good — converging on Fearlessly Forward">
-          <a href="strategic-commitments/reimagine-learning.html" class="sp-venn-circle" data-commitment="1">
+          <a href="commitment/we-reimagine-learning.html" class="sp-venn-circle" data-commitment="1">
             <span class="sp-venn-label">We Reimagine Learning</span>
           </a>
-          <a href="strategic-commitments/grand-challenges.html" class="sp-venn-circle" data-commitment="2">
+          <a href="commitment/we-take-on-humanitys-grand-challenges.html" class="sp-venn-circle" data-commitment="2">
             <span class="sp-venn-label">We Take On Humanity's Grand Challenges</span>
           </a>
-          <a href="strategic-commitments/people-communities.html" class="sp-venn-circle" data-commitment="3">
+          <a href="commitment/we-invest-in-people-and-communities.html" class="sp-venn-circle" data-commitment="3">
             <span class="sp-venn-label">We Invest in People &amp; Communities</span>
           </a>
-          <a href="strategic-commitments/public-good.html" class="sp-venn-circle" data-commitment="4">
+          <a href="commitment/we-partner-to-advance-the-public-good.html" class="sp-venn-circle" data-commitment="4">
             <span class="sp-venn-label">We Partner to Advance the Public Good</span>
           </a>
           <div class="sp-venn-center" aria-hidden="true">Fearlessly Forward</div>
@@ -1061,11 +1061,11 @@ body { overflow-x: clip; }
         <h2 slot="headline">Our Vision</h2>
         <div slot="text">
           <p>We must be united in our noble and fearless purpose. Because celebrating differences and leveling societal inequities must be among our greatest strengths, the grand challenges that define today's ideas and actions are felt not just in individual achievement, but in our collective accomplishments.</p>
-          <p>Fearlessly Forward in Pursuit of Excellence and Impact for the Public Good, the University of Maryland Strategic Plan presents a bold reimagining of what our university must be—to serve our state, our humanity, and the world.</p>
+          <p><span style="font-weight: 700; font-style: italic; text-transform: uppercase;">Fearlessly Forward in Pursuit of Excellence and Impact for the Public Good, the University of Maryland Strategic Plan</span> presents a bold reimagining of what our university must be—to serve our state, our humanity, and the world.</p>
         </div>
         <div slot="actions">
           <umd-element-call-to-action data-display="secondary">
-            <a href="guiding-principles.html">Our Guiding Principles</a>
+            <a href="principles.html">Our Guiding Principles</a>
           </umd-element-call-to-action>
         </div>
         <p slot="highlight">To improve the lives of every person on Earth, we will reimagine teaching and learning; accelerate solutions to the grand challenges of our time through creativity and discovery; and forge a diverse, innovative campus community where excellence is celebrated and equity is relentlessly pursued. Together, we will dedicate ourselves to advancing the public good because our individual well-being is enduringly bound to our collective well-being.</p>
@@ -1146,7 +1146,7 @@ body { overflow-x: clip; }
         if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
         el.__navHeaderLogoInjected = true;
         var style = document.createElement('style');
-        style.textContent = '.element-header-logo img { max-width: 320px !important; }';
+        style.textContent = '.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }';
         el.shadowRoot.appendChild(style);
       }
       document.querySelectorAll('umd-element-navigation-header').forEach(inject);
