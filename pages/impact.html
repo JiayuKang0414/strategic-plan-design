@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impact — Fearlessly Forward | University of Maryland</title>
+  <meta name="description" content="Our progress and impact for the public good — qualitative and quantitative measures of the University of Maryland's Fearlessly Forward strategic plan.">
+
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/font-faces.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/tokens.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/base.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/typography.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/web-components.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/layout.min.css">
+  <style>
+/* ============================================================
+   1. COMPONENT REGISTRATION GAP-FILLS
+   Re-add :defined rules for components missing from upstream
+   web-components.min.css. As those land upstream, drop these.
+   ============================================================ */
+
+/* umd-element-utility-header — present on every page (band above the
+   nav header). Not in upstream bundle as of v1.8.11. */
+umd-element-utility-header:not(:defined) { content-visibility: hidden; }
+umd-element-utility-header { display: block; container-type: normal; }
+
+/* umd-element-carousel* — not in upstream bundle. */
+umd-element-carousel:not(:defined),
+umd-element-carousel-cards:not(:defined),
+umd-element-carousel-thumbnail:not(:defined),
+umd-element-carousel-image:not(:defined),
+umd-element-carousel-image-wide:not(:defined),
+umd-element-carousel-multiple-image:not(:defined) {
+  content-visibility: hidden;
+}
+umd-element-carousel,
+umd-element-carousel-cards,
+umd-element-carousel-thumbnail,
+umd-element-carousel-image,
+umd-element-carousel-image-wide,
+umd-element-carousel-multiple-image {
+  display: block;
+  container-type: inline-size;
+}
+
+/* umd-layout-image-expand — full-bleed pseudo-component.
+   Width:100% is project-specific (collapses without it). */
+umd-layout-image-expand:not(:defined) { content-visibility: hidden; }
+umd-layout-image-expand {
+  display: block;
+  container-type: inline-size;
+  width: 100%;
+}
+
+/* Project-specific spacing for breadcrumb (not a default in upstream). */
+umd-element-breadcrumb:defined { margin-top: 16px; }
+
+
+/* ============================================================
+   2. WATERMARK DECORATION
+   ============================================================ */
+:is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+  position: absolute;
+  top: 20px;
+  left: -2%;
+  color: #f1f1f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: min(calc(44px + 13vw), 240px);
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+:is(.umd-text-decoration-watermark, .umd-watermark):not(.umd-watermark-dark) > * {
+  opacity: 0.6;
+  z-index: -1;
+}
+.umd-watermark-dark > * {
+  opacity: 0.12;
+  z-index: inherit;
+}
+@keyframes slide-in-from-left {
+  from { transform: translate(-15vw); }
+  to   { transform: translate(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    :is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+      animation: slide-in-from-left forwards;
+      animation-timeline: view();
+      animation-range-start: 0;
+      animation-range-end: 100vh;
+      transform: translate(-15vw);
+    }
+  }
+}
+
+
+/* ============================================================
+   3. LAYOUT AUGMENTATIONS
+   Extra properties on upstream layout classes that layout.min.css
+   doesn't include. These cascade over the upstream rules.
+   ============================================================ */
+
+/* Upstream sets max-width/padding correctly. These extra properties are
+   required for watermark positioning and the internal @container query
+   used by umd-element-section-intro-wide. */
+.umd-layout-space-horizontal-larger {
+  position: relative;
+  container-type: inline-size;
+  isolation: isolate;
+}
+
+/* Upstream omits align-items and flex-shrink on the columns-left layout.
+   align-items: flex-start prevents variable-height sidebar from stretching;
+   flex-shrink: 0 keeps the fixed 242px sidebar width under constraint.
+   Breakpoint matches upstream desktop.min (1024px) after DSYS-3063 fix —
+   sidebar width/margin moved from tablet.min (768px) to desktop.min. */
+@media (min-width: 1024px) {
+  .umd-layout-space-columns-left { align-items: flex-start; }
+  .umd-layout-space-columns-left > *:first-child { flex-shrink: 0; }
+}
+
+
+/* ============================================================
+   4. BACKGROUND-FULL-DARK BUG FIX
+   layout.min.css serializes the highDef breakpoint as
+   @media([object Object]) — ignored by browsers — because
+   background/full.ts:42 uses media.queries.highDef (the whole
+   object) instead of media.queries.highDef.min. This rule
+   cascades over the broken upstream with the correct breakpoint.
+   ============================================================ */
+.umd-layout-background-full-dark {
+  background-color: #000000;
+  padding: 48px 0;
+}
+@media (min-width: 768px) {
+  .umd-layout-background-full-dark { padding: 80px 0; }
+}
+@media (min-width: 1200px) {
+  .umd-layout-background-full-dark { padding: 104px 0; }
+}
+
+
+/* ============================================================
+   5. MASONRY SECTION-INTRO COMPANION
+   The base .umd-layout-grid-masonry class is provided by layout.min.css (CDN).
+   This rule compensates for masonry's negative top margin when a section
+   intro immediately precedes it — layout.min.css does not include this fix.
+   ============================================================ */
+@media (min-width: 768px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 32px; }
+}
+@media (min-width: 1024px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 40px; }
+}
+
+
+/* ============================================================
+   6. COLOR UTILITIES — not in upstream tokens or typography bundles
+   ============================================================ */
+.text-black { color: #000; }
+.text-white { color: #ffffff; }
+
+
+/* ============================================================
+   7. RICH TEXT ADVANCED — editorial body copy
+   Light and dark variants. 18px/1.5em with link hover styles.
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-rich-advanced with the same base sizing and link
+   animation. This section is kept as an intentional DELTA:
+   upstream only colors list content #454545; we force it on
+   all descendants. Do not delete without visual verification.
+   ============================================================ */
+
+/* Light variant */
+.umd-text-rich-advanced {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced * {
+  color: #454545;
+}
+.umd-text-rich-advanced > * {
+  font-size: 18px;
+  margin-top: 24px;
+}
+.umd-text-rich-advanced > *:first-child {
+  margin-top: 0;
+}
+.umd-text-rich-advanced a {
+  color: #000000;
+  background-image: linear-gradient(#000000, #000000);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced a:hover,
+.umd-text-rich-advanced a:focus {
+  background-image: linear-gradient(#E21833, #E21833);
+}
+
+/* Dark variant */
+.umd-text-rich-advanced-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced-dark p,
+.umd-text-rich-advanced-dark li { color: #ffffff; }
+.umd-text-rich-advanced-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced-dark a:hover,
+.umd-text-rich-advanced-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   8. INTERIOR PAGE LAYOUT UTILITIES
+   ============================================================ */
+
+/* Content column max-width (Tailwind utility) */
+.max-w-\[800px\] { max-width: 800px; }
+
+
+/* ============================================================
+   9. IMAGE-EXPAND CONTENT UTILITIES
+   Classes for div[slot="content"] inside umd-layout-image-expand.
+   ============================================================ */
+.max-w-\[480px\] { max-width: 480px; }
+.w-full          { width: 100%; }
+.block           { display: block; }
+.mr-auto         { margin-right: auto; }
+.ml-auto         { margin-left: auto; }
+.pl-md           { padding-left: 24px; }
+
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text) { position: relative; }
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text)::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #E21833;
+  left: -24px;
+}
+
+/* Body copy on dark/image backgrounds — white text, animated underline links */
+.umd-text-rich-simple-large-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+  color: #ffffff;
+}
+.umd-text-rich-simple-large-dark * { color: #ffffff; }
+.umd-text-rich-simple-large-dark > * { font-size: 18px; margin-top: 24px; }
+.umd-text-rich-simple-large-dark > *:first-child { margin-top: 0; }
+.umd-text-rich-simple-large-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-simple-large-dark a:hover,
+.umd-text-rich-simple-large-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   10. STICKY COLUMNS UTILITIES
+   Spacing tokens for slot content inside umd-element-sticky-columns.
+   ============================================================ */
+.mb-md { margin-bottom: 24px; }
+.mb-sm { margin-bottom: 16px; }
+
+
+/* ============================================================
+   11. UTILITY NAVIGATION / SHELL-ITEM LINK STYLES
+   The shadow DOM ::slotted(*) only reaches div[slot="utility-navigation"],
+   NOT descendants — all link and separator styles must live here.
+
+   Canonical production pattern (matches umd.edu markup):
+   - Slot container: plain <div slot="utility-navigation">
+   - Each item: div.umd-shell-utility-item > div.umd-shell-utility-actions
+                > a.umd-sans-smaller (or button for dropdowns)
+   - Dropdown: sibling div.umd-shell-utility-links[aria-hidden] panel
+
+   TWO LAYERS — keep them separate:
+   A. BASE (unscoped) — the reusable .umd-shell-utility-item pattern.
+      Used in the nav-header utility slot AND reused in pathway /
+      banner-promo / section-intro action slots (RULES.md §5). These
+      rules MUST stay unscoped or the reuse renders unstyled.
+   B. NAV-HEADER (scoped) — overrides the shadow ::slotted(*) gap:24px
+      and adds dropdown anchoring + panel. Only meaningful in the slot.
+   ============================================================ */
+
+/* ---- A. BASE: reusable shell-item pattern (do NOT scope) ---- */
+.umd-shell-utility-item .umd-shell-utility-actions {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+.umd-shell-utility-item:not(:last-child) .umd-shell-utility-actions {
+  border-right: 1px solid #E6E6E6;
+  margin-right: 16px;
+  padding-right: 16px;
+}
+.umd-shell-utility-item a {
+  color: #242424;
+  text-decoration: none;
+}
+.umd-shell-utility-item a:hover,
+.umd-shell-utility-item a:focus {
+  color: #E21833;
+}
+
+/* ---- B. NAV-HEADER: scoped to the utility-navigation slot ---- */
+/* Override the shadow ::slotted(*) gap:24px (the wrapper margins above
+   handle item spacing in the shell pattern). */
+umd-element-navigation-header div[slot="utility-navigation"] {
+  gap: 0;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item {
+  position: relative;
+  z-index: 99999;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item button {
+  color: #242424;
+  text-decoration: none;
+}
+/* Dropdown panel (shown via JS toggling aria-hidden — see LAYOUT-PATTERNS.md) */
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links {
+  display: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links > * {
+  color: #242424;
+  display: block;
+  padding: 12px;
+  text-align: right;
+  text-decoration: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:hover,
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:focus {
+  color: #a90007;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links[aria-hidden="false"] {
+  align-items: flex-end;
+  background-color: #fafafa;
+  box-shadow: -1px 9px 32px -10px rgba(0, 0, 0, .19);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 16px;
+  width: 200px;
+  max-width: 80vw;
+}
+
+
+/* ============================================================
+   12. BANNER-PROMO STACKED ACTIONS — light-DOM column flex.
+   Pairs with the shadow-DOM injection in OVERRIDES.md so the 8px
+   gap is visible regardless of where children render.
+   ============================================================ */
+.banner-promo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+
+/* ============================================================
+   13. SECTION DIVIDER — standalone <hr> utility.
+   ============================================================ */
+.umd-text-divider {
+  border: none;
+  border-top: 1px solid #000000;
+  margin: 0 0 24px 0;
+}
+.umd-text-divider.dark {
+  border-top-color: #ffffff;
+}
+
+
+/* ============================================================
+   14. TRAILING-LINE LABEL — section eyebrow with horizontal line
+   Source: @universityofmaryland/web-styles-library: element.text.line.trailing
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-line-trailing / -light / -dark. This section is kept
+   as an intentional DELTA: we add font-weight: 700 (upstream
+   omits it) and use #000 for the dark background (upstream uses
+   #242424). Do not delete without visual verification.
+   ============================================================ */
+.umd-text-line-trailing,
+.umd-text-line-trailing-dark {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.42em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+.umd-text-line-trailing::before,
+.umd-text-line-trailing-dark::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 0;
+  width: 100vw;
+  height: 1px;
+  background: #000000;
+  z-index: 1;
+}
+.umd-text-line-trailing > span,
+.umd-text-line-trailing-dark > span {
+  position: relative;
+  background-color: inherit;
+  padding-right: 8px;
+  z-index: 2;
+}
+.umd-text-line-trailing + *,
+.umd-text-line-trailing-dark + * {
+  margin-top: 40px;
+}
+.umd-text-line-trailing-dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+.umd-text-line-trailing-dark::before {
+  background: #ffffff;
+}
+
+
+/* ============================================================
+   15. NOTE — GRID CLASSES FROM LAYOUT.MIN.CSS (CDN)
+   All standard grid classes are provided by layout.min.css loaded
+   from CDN in the <head>. Do NOT add them here — that duplicates CSS.
+
+   Available from CDN (layout.min.css):
+     umd-layout-grid-columns-two/three/four  — no-gap at tablet+
+     umd-layout-grid-gap-stacked/two/three/four  — 32px gap at all bp
+     umd-layout-grid-gap-two  — widens to 40px at 1024px
+     umd-layout-grid-child-fill-height  — height:100% on item + child
+     umd-layout-grid-inline-tablet-rows  — flex CTA row at 650px+
+     umd-layout-grid-masonry  — 2-col staggered (base CSS)
+     umd-layout-grid-offset-three  — 3-col staircase offset
+     umd-layout-grid-border-two/three/four  — bordered cell grids
+
+   Only add grid-related CSS here when it is genuinely absent from
+   layout.min.css (e.g. shellcraft-only classes like umd-animation-grid
+   and umd-shell-person-grid-helper padding).
+   ============================================================ */
+
+
+/* ============================================================
+   16. RETIRED — OVERLAY CARD .size-large MIN-HEIGHT
+   Now shipped verbatim by web-components.min.css (linked in
+   TEMPLATE.html): umd-element-card-overlay.size-large
+   {min-height: 320px; 560px @768px}. Section number reserved —
+   do NOT renumber later sections when retiring a rule.
+   ============================================================ */
+
+
+/* ============================================================
+   17. TUITION & AID 2-COLUMN GRID
+   Asymmetric content split: 1.5fr / 1fr at 1024px+.
+   ============================================================ */
+.umd-layout-grid-tuition-two {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .umd-layout-grid-tuition-two {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 80px;
+  }
+}
+
+
+/* ============================================================
+   18. FULL-WIDTH OUTLINE BUTTON — light-DOM utility class
+   Visually mirrors umd-element-call-to-action data-display="outline"
+   but stretches to fill its grid cell. Use when the DS web component's
+   shadow-DOM max-width:380px would fight against your layout.
+   ============================================================ */
+.umd-action-outline-block {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.28em;
+  text-align: center;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #242424;
+  color: #000000;
+  transition: background 0.5s ease-in-out, border 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+.umd-action-outline-block:hover,
+.umd-action-outline-block:focus {
+  background-color: #242424;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark {
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark:hover,
+.umd-action-outline-block.dark:focus {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+
+/* ============================================================
+   19. BORDER GRID — person-grid-helper container query + padding
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   Verified from: https://umd.edu/about/university-presidents
+
+   The base umd-layout-grid-border-two/three/four grid CSS is
+   provided by layout.min.css (CDN). Only the container query
+   setup and the umd-shell-person-grid-helper responsive padding
+   are absent from layout.min.css — those come from shellcraft.
+
+   Usage: add class="umd-shell-person-grid-helper" to every
+   umd-element-person host inside a border grid.
+   ============================================================ */
+
+/* Establishes named container for padding queries */
+[class*="umd-layout-grid-border-two"],
+[class*="umd-layout-grid-border-three"],
+[class*="umd-layout-grid-border-four"] {
+  container: umd-shell-person-grid-helper / inline-size;
+}
+
+/* Responsive cell padding (24px → 32px → 48px) */
+[class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+  padding: 24px;
+  transition: padding 0.5s ease-in-out;
+}
+@container umd-shell-person-grid-helper (min-width: 650px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 32px;
+  }
+}
+@container umd-shell-person-grid-helper (min-width: 1024px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 48px;
+  }
+}
+
+
+/* ============================================================
+   20. ANIMATION GRID — JS-driven scroll-reveal initial state
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   NOT in layout.min.css — must be here.
+
+   Sets children to invisible + translated as an initial state.
+   A JS scroll observer adds a class/style to reveal them in
+   sequence. Use on grid wrappers (offset grid, gap-stacked in
+   sticky-columns) to get the entrance animation.
+
+   Respects prefers-reduced-motion — no animation if reduced.
+
+   animation.min.css (linked in TEMPLATE.html) ships the same
+   initial state UNGUARDED (.umd-animation-grid > * always gets
+   opacity: 0) plus the fade-in-from-bottom keyframes and the
+   .umd-animation-transition-fade-bottom reveal class. The
+   reduce block below cancels the upstream rule so content is
+   never hidden for reduced-motion users.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .umd-animation-grid > * {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .umd-animation-grid > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+
+/* ============================================================
+   21. SLIDER OVERFLOW CONTAINMENT
+   umd-element-slider-events (and other carousel/slider components)
+   expand beyond the viewport during transitions, causing horizontal
+   scroll at the document level. overflow: hidden on the section
+   alone is not sufficient.
+
+   clip (not hidden) is intentional: overflow-x: hidden promotes
+   the element to a scroll container, which breaks scroll-driven
+   animations (animation-timeline: scroll()) and shifts
+   IntersectionObserver offsets. overflow-x: clip suppresses
+   the scroll bar without creating a scroll container.
+   ============================================================ */
+body { overflow-x: clip; }
+
+
+/* ============================================================
+   22. DARK → LIGHT SECTION TRANSITION GAP
+   When a full-bleed dark section (.umd-layout-background-full-dark)
+   is immediately followed by a default/light section, inject 120px
+   of white breathing room between them.
+
+   Conditional: dark-after-dark gets no extra gap — the adjacent
+   sibling selector only fires when the following section lacks the
+   dark class. Add overflow: hidden to the dark section if its
+   content bleeds into this gap.
+   ============================================================ */
+.umd-layout-background-full-dark + section:not(.umd-layout-background-full-dark) {
+  margin-top: 120px;
+}
+
+
+/* ============================================================
+   23. FILTER BAND COMPANIONS — page-built pieces of the
+   filterable-listing pattern (see LAYOUT-PATTERNS.md "Filter
+   Band"). The band itself uses upstream classes
+   (umd-layout-background-highlight-light, umd-text-line-trailing-
+   light, umd-field-select-wrapper, umd-animation-line-slide-*,
+   sr-only — element/animation/accessibility bundles). Only the
+   search row, results count, and divider list below are absent
+   upstream. Behavior comes from scripts/filter-band.js.
+   ============================================================ */
+.umd-filter-search-row {
+  display: flex;
+  align-items: stretch;
+}
+.umd-filter-search-row input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.375em;
+  border: 1px solid #c0c0c0;
+  border-right: none;
+  color: #242424;
+  background: #fff;
+  min-width: 0;
+}
+.umd-filter-search-row input[type="text"]:focus {
+  outline: 2px solid #E21833;
+  outline-offset: 0;
+}
+.umd-filter-search-btn {
+  background-color: #E21833;
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+.umd-filter-search-btn:hover,
+.umd-filter-search-btn:focus {
+  background-color: #a90007;
+  outline: none;
+}
+.umd-filter-search-btn svg {
+  fill: #fff;
+  width: 20px;
+  height: 20px;
+}
+.umd-filter-results-count {
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  color: #454545;
+  margin: 24px 0 0;
+}
+
+/* Divider list — zero-gap stack with rules between visible items */
+.umd-filter-list {
+  gap: 0 !important;
+  margin-top: 56px;
+}
+.umd-filter-list > .umd-filter-item {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #d0d0d0;
+}
+.umd-filter-list > .umd-filter-item + .umd-filter-item {
+  padding-top: 24px;
+}
+.umd-filter-list > .umd-filter-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.umd-filter-list > .umd-filter-item[hidden] + .umd-filter-item {
+  padding-top: 0;
+}
+.umd-filter-item[hidden] { display: none !important; }
+  </style>
+
+  <style>
+/* ============================================================
+   PAGE-SPECIFIC — Impact
+   Custom components: sp-intro (centered lead w/ red rule),
+   umd-timeline (filterable card carousel), umd-stat-chart
+   (metric tables w/ animated infographic rail). Neither umd-*
+   tag here is a design-system web component — both are light-DOM
+   custom tags styled below and driven by the inline scripts at
+   the end of <body>. See OVERRIDES.md.
+   ============================================================ */
+
+/* Header→hero gap parity (same rationale as we-reimagine-learning). */
+.sp-hero-offset { padding-top: 48px; }
+
+/* Page intro (section-intro, text-only): the comp renders the lead
+   bold 22px black — slotted light DOM, so styled from here. */
+.sp-page-intro [slot="text"] p {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #000;
+}
+
+/* ============================================================
+   UMD-TIMELINE — filterable horizontal card carousel
+   ============================================================ */
+umd-timeline { display: block; }
+
+/* Full-bleed gray-lightest band behind the section intro + timeline.
+   Padding steps mirror .umd-layout-background-full-dark (§4). */
+.sp-timeline-band {
+  background: var(--umd-color-gray-lightest, #FAFAFA);
+  padding: 48px 0;
+}
+@media (min-width: 768px) {
+  .sp-timeline-band { padding: 80px 0; }
+}
+@media (min-width: 1200px) {
+  .sp-timeline-band { padding: 104px 0; }
+}
+
+.sp-timeline-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+}
+.sp-timeline-head > span {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+}
+.sp-timeline-clear {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  color: #454545;
+  text-decoration: underline;
+}
+.sp-timeline-clear:hover,
+.sp-timeline-clear:focus { color: #E21833; }
+
+/* Filter pills — equal-width toggles, one per commitment */
+.sp-timeline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sp-timeline-filters > div {
+  flex: 1 1 240px;
+  position: relative;
+}
+.sp-timeline-filters input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.sp-timeline-filters label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 12px;
+  border-radius: 1px;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  background: var(--sp-pill-bg, #F1F1F1);
+  color: var(--sp-pill-fg, #000);
+  transition: filter 0.3s, opacity 0.3s;
+}
+/* With an active filter, fade every non-selected pill */
+.sp-timeline-filters:has(input:checked) input:not(:checked) + label {
+  opacity: 0.4;
+}
+.sp-timeline-filters label::before {
+  content: "✕";
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  width: 0;
+  overflow: hidden;
+  transition: width 0.3s;
+}
+.sp-timeline-filters input:checked + label::before { width: 12px; }
+.sp-timeline-filters input:hover + label,
+.sp-timeline-filters input:focus-visible + label { filter: brightness(0.92); }
+.sp-timeline-filters input:focus-visible + label { outline: 2px solid #E21833; outline-offset: 2px; }
+.sp-timeline-filters [data-color="red"]       { --sp-pill-bg: #E21833; --sp-pill-fg: #fff; }
+.sp-timeline-filters [data-color="gold"]      { --sp-pill-bg: #FFD200; --sp-pill-fg: #000; }
+.sp-timeline-filters [data-color="lightGray"] { --sp-pill-bg: #F1F1F1; --sp-pill-fg: #000; }
+.sp-timeline-filters [data-color="darkGray"]  { --sp-pill-bg: #757575; --sp-pill-fg: #fff; }
+
+/* Carousel — clipping viewport + sliding flex track (live-site mechanics) */
+.sp-timeline-carousel {
+  position: relative;
+  margin-top: 40px;
+}
+/* The track escapes the lock: cards run to the screen edge on the right,
+   and past the lock on the left once the user has paged over. Horizontal
+   clipping happens at the viewport via body { overflow-x: clip } (§21). */
+.sp-timeline-viewport {
+  overflow: visible;
+  padding-top: 16px; /* room for the overlapping date chips */
+}
+.sp-timeline-track {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  position: relative;
+  left: 0;
+  opacity: 0;
+  transition: left 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+@media (min-width: 768px) {
+  .sp-timeline-track { gap: 40px; }
+}
+
+umd-timeline-card {
+  flex: none;
+  width: 280px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 4px solid var(--sp-cat, #757575);
+  border-bottom: 4px solid var(--sp-cat, #757575);
+  min-height: 440px;
+}
+@media (min-width: 768px) {
+  umd-timeline-card { width: 322px; min-height: 480px; }
+}
+umd-timeline-card[data-color="red"]       { --sp-cat: #E21833; --sp-cat-fg: #fff; }
+umd-timeline-card[data-color="gold"]      { --sp-cat: #FFD200; --sp-cat-fg: #000; }
+umd-timeline-card[data-color="lightGray"] { --sp-cat: #E6E6E6; --sp-cat-fg: #000; }
+umd-timeline-card[data-color="darkGray"]  { --sp-cat: #757575; --sp-cat-fg: #fff; }
+
+.sp-tc-date {
+  position: absolute;
+  top: -15px;
+  right: -4px;
+  z-index: 2;
+  margin: 0;
+  padding: 8px 20px;
+  background: var(--sp-cat);
+  color: var(--sp-cat-fg);
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.sp-tc-media {
+  position: relative;
+  padding-right: 62px;
+}
+.sp-tc-media img {
+  display: block;
+  width: 100%;
+  height: 164px;
+  object-fit: cover;
+}
+.sp-tc-year {
+  position: absolute;
+  top: 20px; /* clears the overlapping date tag */
+  right: 4px;
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #E6E6E6;
+  user-select: none;
+}
+.sp-tc-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 24px;
+}
+.sp-tc-title {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  color: #000;
+  text-decoration: none;
+}
+.sp-tc-title:hover,
+.sp-tc-title:focus { text-decoration: underline; }
+.sp-tc-deck {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+  color: #454545;
+  margin: 16px 0 0;
+}
+.sp-tc-arrow {
+  margin-top: auto;
+  padding-top: 24px;
+  display: inline-flex;
+  width: max-content;
+}
+.sp-tc-arrow svg { fill: var(--umd-color-gray-light, #E6E6E6); transition: fill 0.3s, transform 0.3s; }
+.sp-tc-arrow:hover svg,
+.sp-tc-arrow:focus svg { fill: var(--sp-cat); transform: translateX(4px); }
+umd-timeline-card[data-color="lightGray"] .sp-tc-arrow:hover svg,
+umd-timeline-card[data-color="lightGray"] .sp-tc-arrow:focus svg { fill: #757575; transform: translateX(4px); }
+
+.sp-timeline-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+}
+.sp-timeline-btn svg { fill: #E21833; width: 18px; height: 18px; }
+.sp-timeline-btn:hover,
+.sp-timeline-btn:focus { background: #E21833; }
+.sp-timeline-btn:hover svg,
+.sp-timeline-btn:focus svg { fill: #fff; }
+.sp-timeline-prev { left: -8px; }
+.sp-timeline-next { right: -8px; }
+.sp-timeline-btn[hidden] { display: none; }
+
+/* ============================================================
+   UMD-STAT-CHART — metric table + animated infographic rail
+   ============================================================ */
+umd-stat-chart { display: block; }
+.sp-chart-stack { margin-top: 56px; }
+.sp-chart-stack umd-stat-chart + umd-stat-chart { margin-top: 56px; }
+
+.sp-chart-label {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #000;
+  margin: 0 0 24px;
+}
+.sp-chart-body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+@media (min-width: 768px) {
+  .sp-chart-body {
+    flex-direction: row;
+    align-items: flex-start; /* stretch made the black header cells fill the rail's height */
+    gap: 24px;
+  }
+}
+
+/* Table: one .sp-chart-col per data column (header + value stay paired
+   at every viewport). 1px gaps between black header cells. */
+.sp-chart-table {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px 1px;
+  align-items: stretch;
+}
+@media (min-width: 480px) {
+  .sp-chart-table { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .sp-chart-table[data-cols="4"] { grid-template-columns: repeat(4, 1fr); }
+}
+.sp-chart-col { display: flex; flex-direction: column; }
+.sp-chart-th {
+  flex: 1;
+  background: #000;
+  color: #fff;
+  padding: 24px 16px 24px 24px;
+}
+@media (min-width: 1024px) {
+  .sp-chart-th { padding-left: 40px; }
+}
+.sp-chart-metric {
+  display: block;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.sp-chart-year {
+  display: block;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+.sp-chart-value {
+  margin: 16px 0 0;
+  padding-left: 24px;
+  font-family: "Barlow Condensed", "Interstate", Helvetica, Arial, sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 0.91;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #E21833;
+}
+@media (min-width: 1024px) {
+  .sp-chart-value { padding-left: 40px; }
+}
+
+/* Infographic rail */
+.sp-chart-info {
+  flex: 0 0 auto;
+  align-self: start;
+  width: 135px;
+  border-top: 2px solid #000;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .sp-chart-info { flex: 0 0 135px; }
+}
+.sp-chart-glyph { width: 72px; height: 72px; }
+.sp-chart-glyph-bar { width: 48px; height: 78px; }
+.sp-chart-pct {
+  margin: 12px 0 4px;
+  font-family: "Barlow Condensed", "Interstate", Helvetica, Arial, sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 44px;
+  line-height: 0.91;
+  color: #E21833;
+}
+.sp-chart-caption {
+  margin: 0;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  line-height: 1.29;
+  color: #454545;
+}
+.sp-chart-footnote {
+  margin: 24px 0 0;
+  padding-left: 16px;
+  border-left: 2px solid #E21833;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #454545;
+}
+@media (min-width: 768px) {
+  /* Match the table's width (chart minus the 135px rail + 24px gap) */
+  .sp-chart-footnote { max-width: calc(100% - 159px); }
+}
+
+/* Scroll-triggered glyph animations (mirrors the live site: an
+   IntersectionObserver at threshold 1 adds .is-active — see the
+   stat-chart script at the end of <body>). */
+@media (prefers-reduced-motion: no-preference) {
+  [data-chart="up-arrow"] .sp-chart-glyph {
+    transform: translateY(30px);
+    transition: transform 0.5s ease-in;
+  }
+  [data-chart="up-arrow"].is-active .sp-chart-glyph { transform: translateY(0); }
+
+  [data-chart="bar"] .sp-chart-glyph rect {
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transform-box: fill-box;
+    transition: transform 0.6s ease-out;
+  }
+  /* Gold 100% bars grow first; the divider line + red overage follow */
+  [data-chart="bar"] .sp-chart-glyph .sp-bar-line,
+  [data-chart="bar"] .sp-chart-glyph .sp-bar-red { transition-delay: 0.25s; }
+  [data-chart="bar"].is-active .sp-chart-glyph rect { transform: scaleY(1); }
+
+  [data-chart="donut"] .sp-donut-arc {
+    stroke-dashoffset: 113.1;
+    transition: stroke-dashoffset 1s ease-out 0.1s;
+  }
+  [data-chart="donut"].is-active .sp-donut-arc {
+    stroke-dashoffset: var(--sp-donut-offset, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-chart="donut"] .sp-donut-arc { stroke-dashoffset: var(--sp-donut-offset, 0); }
+}
+
+/* ---- Group pathway headlines render uppercase per the comp ---- */
+umd-element-pathway [slot="headline"] { text-transform: uppercase; }
+
+/* ---- News grid spacing below the wide section intro (mirrors the
+   masonry companion rule in §5 of the shared block) ---- */
+umd-element-section-intro-wide + .umd-layout-grid-columns-four { margin-top: 32px; }
+@media (min-width: 1024px) {
+  umd-element-section-intro-wide + .umd-layout-grid-columns-four { margin-top: 40px; }
+}
+  </style>
+
+  <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
+</head>
+<body>
+
+  <!-- 1. GLOBAL UNIVERSITY HEADER -->
+  <umd-element-navigation-utility data-alert-off="true" role="navigation" aria-label="Utility navigation"></umd-element-navigation-utility>
+  <umd-element-utility-header></umd-element-utility-header>
+
+  <!-- 2. SITE NAVIGATION HEADER -->
+  <umd-element-navigation-header
+    sticky
+    class="umd-layout-space-horizontal-full">
+    <a slot="logo" href="index.html">
+      <img src="../images/logos/strategic-plan-logo.svg" alt="University of Maryland Strategic Plan"
+           onerror="this.onerror=null;this.src='../images/logos/primary-logo-dark.svg';" />
+    </a>
+    <nav slot="main-navigation">
+      <umd-element-nav-item>
+        <a slot="primary-link" href="principles.html">Guiding Principles</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="strategic-commitments.html">Strategic Commitments</a>
+        <div slot="dropdown-links">
+          <a href="commitment/we-reimagine-learning.html">We Reimagine Learning</a>
+          <a href="commitment/we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="commitment/we-invest-in-people-and-communities.html">We Invest in People and Communities</a>
+          <a href="commitment/we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a>
+        </div>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="implementation.html">Implementation</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="impact.html">Impact</a>
+      </umd-element-nav-item>
+    </nav>
+    <div slot="primary-slide-links">
+      <a href="principles.html"><span>Guiding Principles</span></a>
+      <a href="strategic-commitments.html" data-child-ref="strategic-commitments"><span>Strategic Commitments</span></a>
+      <a href="implementation.html"><span>Implementation</span></a>
+      <a href="impact.html"><span>Impact</span></a>
+    </div>
+    <div slot="children-slides">
+      <div data-parent-ref="strategic-commitments">
+        <a href="commitment/we-reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="commitment/we-take-on-humanitys-grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="commitment/we-invest-in-people-and-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="commitment/we-partner-to-advance-the-public-good.html"><span>We Partner to Advance the Public Good</span></a>
+      </div>
+    </div>
+  </umd-element-navigation-header>
+
+  <main>
+
+    <!-- 3. HERO — stacked, gold-ribbon eyebrow + centered text + full-width image
+         (same attribute set and sp-hero-offset rationale as we-reimagine-learning.html). -->
+    <section class="umd-layout-vertical-landing sp-hero-offset">
+      <umd-element-hero data-display="stacked" data-layout-space-horizontal="large" data-layout-height="small" data-animation="true" data-layout-position="80">
+        <img slot="image" src="../images/impact/hero-mckeldin.jpg" alt="McKeldin Library and McKeldin Mall on a sunny spring day" />
+        <p slot="eyebrow">Impact</p>
+        <h1 slot="headline">Our Progress &amp; Impact for the Public Good</h1>
+        <div slot="text">
+          <p>The University of Maryland's excellence is the result of our collective efforts – across divisions, colleges and schools, and in the community.</p>
+        </div>
+      </umd-element-hero>
+    </section>
+
+    <!-- 4. INTRO — section intro, text-only (no headline) + Annual Progress Reports CTA -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-section-intro include-separator class="sp-page-intro">
+        <div slot="text">
+          <p>An important part of implementing Fearlessly Forward is telling our stories and tracking our progress. We launched our strategic planning process in 2021. Since then, we've seen tremendous progress in key areas of impact. A selection of qualitative and quantitative measures are highlighted on this page, and our exciting progress is captured in our annual progress report.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <a href="implementation.html">Annual Progress Reports</a>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-section-intro>
+    </section>
+
+    <!-- 5. TIMELINE — How We're Moving Fearlessly Forward
+         Custom umd-timeline: filter by commitment (union of checked pills),
+         one-card-per-click sliding carousel + touch swipe. Mechanics mirror
+         strategicplan.umd.edu/impact; visuals follow the Figma comp. -->
+    <section class="umd-layout-vertical-landing sp-timeline-band">
+      <umd-element-section-intro>
+        <h2 slot="headline">How We're Moving Fearlessly Forward</h2>
+      </umd-element-section-intro>
+      <div class="umd-layout-space-horizontal-larger" style="margin-top: 48px;">
+        <umd-timeline>
+          <div class="sp-timeline-head">
+            <span>Filter by</span>
+            <button type="button" class="sp-timeline-clear">Clear all</button>
+          </div>
+          <div class="sp-timeline-filters">
+            <div data-color="red">
+              <input id="sp-filter-red" type="checkbox" />
+              <label for="sp-filter-red">We Reimagine Learning</label>
+            </div>
+            <div data-color="gold">
+              <input id="sp-filter-gold" type="checkbox" />
+              <label for="sp-filter-gold">We Take on Humanity's Grand Challenges</label>
+            </div>
+            <div data-color="lightGray">
+              <input id="sp-filter-light-gray" type="checkbox" />
+              <label for="sp-filter-light-gray">We Invest in People &amp; Communities</label>
+            </div>
+            <div data-color="darkGray">
+              <input id="sp-filter-dark-gray" type="checkbox" />
+              <label for="sp-filter-dark-gray">We Partner to Advance the Public Good</label>
+            </div>
+          </div>
+          <div class="sp-timeline-carousel">
+            <button type="button" class="sp-timeline-btn sp-timeline-prev" aria-label="Previous" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 4.6 14 3.2 5.2 12l8.8 8.8 1.4-1.4L8 12z"/></svg>
+            </button>
+            <div class="sp-timeline-viewport">
+              <div class="sp-timeline-track">
+            <umd-timeline-card data-color="red">
+              <p class="sp-tc-date">Apr 17</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/briefs/proposals-welcomed-for-2026-27-teaching-innovation-grants" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-01.jpg" alt="Teaching innovation" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/briefs/proposals-welcomed-for-2026-27-teaching-innovation-grants" target="_blank" rel="noopener">Proposals Welcomed for 2026-27 Teaching Innovation Grants</a>
+                <p class="sp-tc-deck">Grant Cycle Focused on Deepening Faculty Engagement in Data-Driven Pedagogical Enhancements</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/briefs/proposals-welcomed-for-2026-27-teaching-innovation-grants" target="_blank" rel="noopener" aria-label="Read: Proposals Welcomed for 2026-27 Teaching Innovation Grants">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="red">
+              <p class="sp-tc-date">Apr 7</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/students-fit-the-bills-in-state-government" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-02.jpg" alt="Banjo Joyce UMD Fellows Statehouse internship 04062026 JC 0216 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/students-fit-the-bills-in-state-government" target="_blank" rel="noopener">Students Fit the Bill(s) in State Government</a>
+                <p class="sp-tc-deck">Record Number of UMD Fellows Intern With Maryland General Assembly</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/students-fit-the-bills-in-state-government" target="_blank" rel="noopener" aria-label="Read: Students Fit the Bill(s) in State Government">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="gold">
+              <p class="sp-tc-date">Mar 4</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/umd-invests-5-25m-to-sustain-essential-research-support-early-career-scholars" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-03.jpg" alt="Campus Snow 03022026 SC 0437 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/umd-invests-5-25m-to-sustain-essential-research-support-early-career-scholars" target="_blank" rel="noopener">UMD Invests $5.25M to Sustain Essential Research, Support Early-Career Scholars</a>
+                <p class="sp-tc-deck">82 Projects Receive Research Resilience Initiatives Funding Through UMD, MPower</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/umd-invests-5-25m-to-sustain-essential-research-support-early-career-scholars" target="_blank" rel="noopener" aria-label="Read: UMD Invests $5.25M to Sustain Essential Research, Support Early-Career Scholars">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="gold">
+              <p class="sp-tc-date">Feb 26</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/aim-welcomes-5-distinguished-artificial-intelligence-scholars" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-04.jpg" alt="I Stock 2216163156 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/aim-welcomes-5-distinguished-artificial-intelligence-scholars" target="_blank" rel="noopener">AIM Welcomes 5 Distinguished Artificial Intelligence Scholars</a>
+                <p class="sp-tc-deck">Core Faculty Hires Bring Expertise in Philosophy, Computer Science, Public Health, Bioengineering, Government and Politics</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/aim-welcomes-5-distinguished-artificial-intelligence-scholars" target="_blank" rel="noopener" aria-label="Read: AIM Welcomes 5 Distinguished Artificial Intelligence Scholars">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="lightGray">
+              <p class="sp-tc-date">Feb 18</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/25-umd-staff-members-honored-for-exceptional-contributions" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-05.jpg" alt="Fearlessly Forward Awards 02172026 JC 7159 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/25-umd-staff-members-honored-for-exceptional-contributions" target="_blank" rel="noopener">25 UMD Staff Members Honored for Exceptional Contributions</a>
+                <p class="sp-tc-deck">Fearlessly Forward Awards Recognize Dedication, Innovation</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/25-umd-staff-members-honored-for-exceptional-contributions" target="_blank" rel="noopener" aria-label="Read: 25 UMD Staff Members Honored for Exceptional Contributions">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="gold">
+              <p class="sp-tc-date">Feb 16</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/at-3-year-anniversary-grand-challenges-grants-program-reaps-major-returns" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-06.jpg" alt="Grand challenges 2 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/at-3-year-anniversary-grand-challenges-grants-program-reaps-major-returns" target="_blank" rel="noopener">At 3-Year Anniversary, Grand Challenges Grants Program Reaps Major Returns</a>
+                <p class="sp-tc-deck">$30M Investment in UMD Research Advances Solutions to Societal Issues, Brings in $55M in External Funding</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/at-3-year-anniversary-grand-challenges-grants-program-reaps-major-returns" target="_blank" rel="noopener" aria-label="Read: At 3-Year Anniversary, Grand Challenges Grants Program Reaps Major Returns">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="lightGray">
+              <p class="sp-tc-date">Feb 13</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/umd-to-launch-grand-challenges-graduate-communities" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-07.jpg" alt="Leonardtown Building 02122026 JC 4497 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/umd-to-launch-grand-challenges-graduate-communities" target="_blank" rel="noopener">UMD to Launch Grand Challenges Graduate Communities</a>
+                <p class="sp-tc-deck">New Graduate Student Housing Will Accelerate Interdisciplinary Research, Mentorship and Professional Impact</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/umd-to-launch-grand-challenges-graduate-communities" target="_blank" rel="noopener" aria-label="Read: UMD to Launch Grand Challenges Graduate Communities">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="gold">
+              <p class="sp-tc-date">Jan 20</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/proposals-sought-for-grand-challenges-grants-2-0" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-08.jpg" alt="Grand Challenges Global Food Water 03312023 SC 6322 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/proposals-sought-for-grand-challenges-grants-2-0" target="_blank" rel="noopener">Proposals Sought for Grand Challenges Grants 2.0</a>
+                <p class="sp-tc-deck">External Funding From First Round Nearly Doubled UMD’s Investment in Solving Societal Problems</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/proposals-sought-for-grand-challenges-grants-2-0" target="_blank" rel="noopener" aria-label="Read: Proposals Sought for Grand Challenges Grants 2.0">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="darkGray">
+              <p class="sp-tc-date">Jan 14</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/university-of-maryland-earns-carnegie-community-engagement-classification" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-09.jpg" alt="Good Neighbor Day Pregnancy Aid Center 10252025 DS 9893 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2026</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/university-of-maryland-earns-carnegie-community-engagement-classification" target="_blank" rel="noopener">University of Maryland Earns Carnegie Community Engagement Classification</a>
+                <p class="sp-tc-deck">Prestigious National Designation Recognizes UMD’s Excellence in Community-Engaged Teaching, Research and Service</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/university-of-maryland-earns-carnegie-community-engagement-classification" target="_blank" rel="noopener" aria-label="Read: University of Maryland Earns Carnegie Community Engagement Classification">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="gold">
+              <p class="sp-tc-date">Nov 20</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/8-75m-investment-supports-research-resilience-amid-challenging-federal-funding-environment" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-10.jpg" alt="Sundial Fall 10232025 DS 8989 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/8-75m-investment-supports-research-resilience-amid-challenging-federal-funding-environment" target="_blank" rel="noopener">$8.75M Investment Supports ‘Research Resilience’ Amid Challenging Federal Funding Environment</a>
+                <p class="sp-tc-deck">UMD, MPower Funds Combine to Help Preserve Institutional Capabilities, Lab Operations and More</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/8-75m-investment-supports-research-resilience-amid-challenging-federal-funding-environment" target="_blank" rel="noopener" aria-label="Read: $8.75M Investment Supports ‘Research Resilience’ Amid Challenging Federal Funding Environment">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="red">
+              <p class="sp-tc-date">Oct 27</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/program-helps-faculty-adapt-teaching-for-the-ai-era" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-11.jpg" alt="Adobe Stock 1527600129 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/program-helps-faculty-adapt-teaching-for-the-ai-era" target="_blank" rel="noopener">Program Helps Faculty Adapt Teaching for the AI Era</a>
+                <p class="sp-tc-deck">TLTC’s New ‘GenAI-Informed Pedagogy’ Track Has Already Guided Hundreds of Instructors</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/program-helps-faculty-adapt-teaching-for-the-ai-era" target="_blank" rel="noopener" aria-label="Read: Program Helps Faculty Adapt Teaching for the AI Era">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="darkGray">
+              <p class="sp-tc-date">Sep 29</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/8-faculty-3-years-of-lifesaving-collaborations" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-12.jpg" alt="M Power Professors 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/8-faculty-3-years-of-lifesaving-collaborations" target="_blank" rel="noopener">8 Faculty, 3 Years of Lifesaving Collaborations</a>
+                <p class="sp-tc-deck">First Cohort of UMB, UMCP MPower Professors to Continue Health Care Innovation</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/8-faculty-3-years-of-lifesaving-collaborations" target="_blank" rel="noopener" aria-label="Read: 8 Faculty, 3 Years of Lifesaving Collaborations">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="red">
+              <p class="sp-tc-date">Sep 10</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/new-teaching-innovation-grants-help-accommodate-broad-spectrum-of-learners" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-13.jpg" alt="Education istock 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/new-teaching-innovation-grants-help-accommodate-broad-spectrum-of-learners" target="_blank" rel="noopener">New Teaching Innovation Grants Help Accommodate ‘Broad Spectrum of Learners’</a>
+                <p class="sp-tc-deck">Awards for 48 Projects Fund Implementation of Universal Design for Learning Principles</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/new-teaching-innovation-grants-help-accommodate-broad-spectrum-of-learners" target="_blank" rel="noopener" aria-label="Read: New Teaching Innovation Grants Help Accommodate ‘Broad Spectrum of Learners’">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="lightGray">
+              <p class="sp-tc-date">Aug 19</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/umd-ranks-no-13-among-public-universities-for-pell-grant-recipients-graduation-rates" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-14.jpg" alt="Campus North Gate Iribe 07232025 JC 8741 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/umd-ranks-no-13-among-public-universities-for-pell-grant-recipients-graduation-rates" target="_blank" rel="noopener">UMD Ranks No. 13 Among Public Universities for Pell Grant Recipients’ Graduation Rates</a>
+                <p class="sp-tc-deck">Chronicle of Higher Education Recognizes Efforts to Support Students With Highest Financial Need</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/umd-ranks-no-13-among-public-universities-for-pell-grant-recipients-graduation-rates" target="_blank" rel="noopener" aria-label="Read: UMD Ranks No. 13 Among Public Universities for Pell Grant Recipients’ Graduation Rates">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="red">
+              <p class="sp-tc-date">Jul 8</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/umd-among-top-5-doctorate-producers-in-5-critical-tech-areas" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-15.jpg" alt="Commencement 05222025 DS 0923 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/umd-among-top-5-doctorate-producers-in-5-critical-tech-areas" target="_blank" rel="noopener">UMD Among Top 5 Doctorate Producers in 5 Critical Tech Areas</a>
+                <p class="sp-tc-deck">New Study Finds That UMD Graduates High Numbers of Students in Quantum Science, AI and Other STEM Ph.D.s</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/umd-among-top-5-doctorate-producers-in-5-critical-tech-areas" target="_blank" rel="noopener" aria-label="Read: UMD Among Top 5 Doctorate Producers in 5 Critical Tech Areas">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="darkGray">
+              <p class="sp-tc-date">Jun 17</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/usm-google-to-bring-google-career-certificates-ai-training-to-thousands-of-learners" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-16.jpg" alt="The Mall at UMD" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/usm-google-to-bring-google-career-certificates-ai-training-to-thousands-of-learners" target="_blank" rel="noopener">USM, Google to Bring Google Career Certificates, AI Training to Thousands of Learners</a>
+                <p class="sp-tc-deck">Partnership Will Amplify USM’s Role in Upskilling Maryland’s Current, Future Workforces</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/usm-google-to-bring-google-career-certificates-ai-training-to-thousands-of-learners" target="_blank" rel="noopener" aria-label="Read: USM, Google to Bring Google Career Certificates, AI Training to Thousands of Learners">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="darkGray">
+              <p class="sp-tc-date">May 12</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/a-vote-for-civic-education" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-17.jpg" alt="Laufer Democracy Internship 08072024 RS 3486 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/a-vote-for-civic-education" target="_blank" rel="noopener">A Vote for Civic Education</a>
+                <p class="sp-tc-deck">Gift to Maryland Democracy Initiative Supports Political Engagement, Literacy Efforts</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/a-vote-for-civic-education" target="_blank" rel="noopener" aria-label="Read: A Vote for Civic Education">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="darkGray">
+              <p class="sp-tc-date">Apr 24</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/medical-training-initiative-food-recovery-network-take-top-prizes-at-do-good-challenge" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-18.jpg" alt="54470009157 94e6dc623d o 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/medical-training-initiative-food-recovery-network-take-top-prizes-at-do-good-challenge" target="_blank" rel="noopener">Medical Training Initiative, Food Recovery Network Take Top Prizes at Do Good Challenge</a>
+                <p class="sp-tc-deck">$40K Competition Celebrates Students Creating Social Impact on Global Challenges</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/medical-training-initiative-food-recovery-network-take-top-prizes-at-do-good-challenge" target="_blank" rel="noopener" aria-label="Read: Medical Training Initiative, Food Recovery Network Take Top Prizes at Do Good Challenge">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="lightGray">
+              <p class="sp-tc-date">Feb 5</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/25-umd-employees-honored-for-service-contributions" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-19.jpg" alt="Terrapin Impact Awards 02042025 SC 8450 1920x1080" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/25-umd-employees-honored-for-service-contributions" target="_blank" rel="noopener">25 UMD Employees Honored for Service, Contributions</a>
+                <p class="sp-tc-deck">Fearlessly Forward Awards Celebrate Staff Members Across Campus</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/25-umd-employees-honored-for-service-contributions" target="_blank" rel="noopener" aria-label="Read: 25 UMD Employees Honored for Service, Contributions">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+            <umd-timeline-card data-color="lightGray">
+              <p class="sp-tc-date">Jan 28</p>
+              <div class="sp-tc-media">
+                <a href="https://today.umd.edu/briefs/umd-launches-professional-development-programs-for-supervisors" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+                  <img src="../images/impact/timeline/tc-20.jpg" alt="A teacher and student converse while sitting side by side at a table" loading="lazy" />
+                </a>
+                <p class="sp-tc-year" aria-hidden="true">2025</p>
+              </div>
+              <div class="sp-tc-body">
+                <a class="sp-tc-title" href="https://today.umd.edu/briefs/umd-launches-professional-development-programs-for-supervisors" target="_blank" rel="noopener">UMD Launches Professional Development Programs for Supervisors</a>
+                <p class="sp-tc-deck">New series of programs and resources will support faculty and staff supervisors</p>
+                <a class="sp-tc-arrow" href="https://today.umd.edu/briefs/umd-launches-professional-development-programs-for-supervisors" target="_blank" rel="noopener" aria-label="Read: UMD Launches Professional Development Programs for Supervisors">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 22" width="30" height="29" aria-hidden="true"><path d="M0 8h13L8.5 3.5 12 0l11 11-11 11-3.5-3.5L13 14H0z"/></svg>
+                </a>
+              </div>
+            </umd-timeline-card>
+              </div>
+            </div>
+            <button type="button" class="sp-timeline-btn sp-timeline-next" aria-label="Next">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 3.2 7.2 4.6 14.6 12l-7.4 7.4 1.4 1.4L17.4 12z"/></svg>
+            </button>
+          </div>
+        </umd-timeline>
+      </div>
+    </section>
+
+    <!-- COMMITMENT METRICS — We Take on Humanity's Grand Challenges -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-layout-image-position="left">
+        <img slot="image" src="../images/impact/group-grand-challenges.jpg" alt="Maryland Mesonet" />
+        <h2 slot="headline">We Take on Humanity's Grand Challenges</h2>
+        <div slot="text">
+          <p>Our education, research, scholarship and creative activities, and service are designed to accelerate solutions to humanity’s grand challenges—within our communities and around the globe.</p>
+        </div>
+      </umd-element-pathway>
+      <div class="umd-layout-space-horizontal-larger sp-chart-stack">
+      <umd-stat-chart>
+        <p class="sp-chart-label">Research and scholarly activity expenditures</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="4">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Expenditures</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">$536M</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Expenditures</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">$713M</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Expenditures</span><span class="sp-chart-year">2028</span></div>
+            <p class="sp-chart-value">$812M</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Expected Expenditures</span><span class="sp-chart-year">2030</span></div>
+            <p class="sp-chart-value">$902M</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">33%</p>
+          <p class="sp-chart-caption">Increase in expenditures</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">New and expanded partnerships through the Grand Challenges Grants program</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Partnerships</span><span class="sp-chart-year">2023 (program launch year)</span></div>
+            <p class="sp-chart-value">200</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Partnerships</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">450</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="bar">
+          <svg class="sp-chart-glyph sp-chart-glyph-bar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 78" aria-hidden="true"><rect class="sp-bar-gold" x="5" y="30" width="17" height="48" fill="#FFD200"/><rect class="sp-bar-gold" x="26" y="30" width="17" height="48" fill="#FFD200"/><rect class="sp-bar-line" x="26" y="28" width="17" height="2" fill="#000"/><rect class="sp-bar-red" x="26" y="16" width="17" height="12" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">125%</p>
+          <p class="sp-chart-caption">Increase in partnerships</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Startups created from UMD research</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative number of startups</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">60</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative number of startups</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">81</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">35%</p>
+          <p class="sp-chart-caption">Increase in startups created</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">U.S. patents issued to UMD faculty, staff, and student inventors through UM Ventures</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative Number of Patents</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">971</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative Number of Patents</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">1,289</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">33%</p>
+          <p class="sp-chart-caption">Increase in patents</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+      </div>
+    </section>
+
+    <!-- COMMITMENT METRICS — We Reimagine Learning -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-layout-image-position="right">
+        <img slot="image" src="../images/impact/group-reimagine-learning.jpg" alt="One person presents from a chart while other students site at a round table." />
+        <h2 slot="headline">We Reimagine Learning</h2>
+        <div slot="text">
+          <p>We reimagine learning and teaching as inclusive, experiential, publicly engaged, creative, integrative, holistic, and empowering.</p>
+        </div>
+      </umd-element-pathway>
+      <div class="umd-layout-space-horizontal-larger sp-chart-stack">
+      <umd-stat-chart>
+        <p class="sp-chart-label">Students winning nationally competitive awards and scholarships</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of Students</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">73</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of Students</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">124</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">70%</p>
+          <p class="sp-chart-caption">Percent increase in students</p>
+        </div>
+        </div>
+      <p class="sp-chart-footnote">Defined as: Awards identified and coordinated through the National Scholarship Office. Awards must be nationally competitive and sponsored by agencies that are members of the National Association of Fellowship Advisors or comparable organizations.</p>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Expanded accessible, flexible, and learner-centered environments through the Learning Environment Modernization program</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative Projects Completed</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">38</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative Projects Completed</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">178</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="bar">
+          <svg class="sp-chart-glyph sp-chart-glyph-bar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 78" aria-hidden="true"><rect class="sp-bar-gold" x="5" y="58" width="17" height="20" fill="#FFD200"/><rect class="sp-bar-gold" x="26" y="58" width="17" height="20" fill="#FFD200"/><rect class="sp-bar-line" x="26" y="56" width="17" height="2" fill="#000"/><rect class="sp-bar-red" x="26" y="2.4" width="17" height="53.6" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">368%</p>
+          <p class="sp-chart-caption">Increase in projects completed</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">General-purpose classrooms meeting Section 503 accessibility requirements</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Fully ADA Accessible GPCs</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">326</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Fully ADA Accessible GPCs</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">331</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="donut">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" aria-hidden="true" style="--sp-donut-offset:1.13"><circle cx="24" cy="24" r="18" fill="none" stroke="#FAFAFA" stroke-width="12"/><circle class="sp-donut-arc" cx="24" cy="24" r="18" fill="none" stroke="#FFD200" stroke-width="12" stroke-dasharray="113.1" transform="rotate(-90 24 24)"/></svg>
+          <p class="sp-chart-pct">99%</p>
+          <p class="sp-chart-caption">GPCs that meet accessibility requirements</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+      </div>
+    </section>
+
+    <!-- COMMITMENT METRICS — We Invest in People and Communities -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-layout-image-position="left">
+        <img slot="image" src="../images/impact/group-invest-people.jpg" alt="A teacher and student converse while sitting side by side at a table" />
+        <h2 slot="headline">We Invest in People and Communities</h2>
+        <div slot="text">
+          <p>We invest in people, their well-being and advancement, and the conditions that support their ability to fully participate and thrive in our community, state, and world.</p>
+        </div>
+      </umd-element-pathway>
+      <div class="umd-layout-space-horizontal-larger sp-chart-stack">
+      <umd-stat-chart>
+        <p class="sp-chart-label">Average need-based aid to undergraduate students with financial need</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Average Aid Awarded</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">$10,599</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Average Aid Awarded</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">$17,425</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">64%</p>
+          <p class="sp-chart-caption">Increase in average aid awarded</p>
+        </div>
+        </div>
+      <p class="sp-chart-footnote">Defined as: Average need-based scholarship and grant award for full-time undergraduates awarded any need-based aid for the academic years 2020-21 and 2023-24.</p>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Number of students who receive federal Pell Grants</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of students</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">5,448</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of students</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">7,277</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">34%</p>
+          <p class="sp-chart-caption">Increase in Pell Grant recipients</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Four-year graduation rate for new first-time students</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">4-Year graduation rate</span><span class="sp-chart-year">2021 (fall 2017 cohort)</span></div>
+            <p class="sp-chart-value">76%</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">4-Year graduation rate</span><span class="sp-chart-year">2025 (fall 2021 cohort)</span></div>
+            <p class="sp-chart-value">80%</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">4%</p>
+          <p class="sp-chart-caption">Percentage point increase in graduation rate</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Six-year graduation rate for new first-time students</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">6-Year graduation rate</span><span class="sp-chart-year">2021 (fall 2015 cohort)</span></div>
+            <p class="sp-chart-value">88.4%</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">6-Year graduation rate</span><span class="sp-chart-year">2025 (fall 2019 cohort)</span></div>
+            <p class="sp-chart-value">88.6%</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">0%</p>
+          <p class="sp-chart-caption">Percentage point increase in graduation rate</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+      </div>
+    </section>
+
+    <!-- COMMITMENT METRICS — We Partner to Advance the Public Good -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-layout-image-position="right">
+        <img slot="image" src="../images/impact/group-partner-public-good.jpg" alt="Instructors and students work in a garden bed of lush plants" />
+        <h2 slot="headline">We Partner to Advance the Public Good</h2>
+        <div slot="text">
+          <p>We will create and sustain partnerships that allow our research to have impact locally and globally, our education to prepare students for civic engagement and impact, and our service to create solutions for a more equitable, sustainable, and resilient world.</p>
+        </div>
+      </umd-element-pathway>
+      <div class="umd-layout-space-horizontal-larger sp-chart-stack">
+      <umd-stat-chart>
+        <p class="sp-chart-label">Economic impact in the state of Maryland</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Economic Impact</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">$3.16B</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Economic Impact</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">$3.7B</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">17%</p>
+          <p class="sp-chart-caption">Increase in economic impact on the State of Maryland</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Number of all undergraduate students enrolled at UMD from Prince George's County and Baltimore City</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of Students</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">2,957</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of Students</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">3,577</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">21%</p>
+          <p class="sp-chart-caption">Increase in students enrolled</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+      </div>
+    </section>
+
+    <!-- COMMITMENT METRICS — We Move Fearlessly Forward -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-layout-image-position="left">
+        <img slot="image" src="../images/impact/group-fearlessly-forward.jpg" alt="The Mall at UMD" />
+        <h2 slot="headline">We Move Fearlessly Forward</h2>
+        <div slot="text">
+          <p>To improve the lives of every person on Earth, we will reimagine teaching and learning; accelerate solutions to the grand challenges of our time through creativity and discovery; and forge a diverse and inclusive community where our differences are celebrated and equity is relentlessly pursued.</p>
+        </div>
+      </umd-element-pathway>
+      <div class="umd-layout-space-horizontal-larger sp-chart-stack">
+      <umd-stat-chart>
+        <p class="sp-chart-label">Our preeminence as a top ranked national research university by U.S. News &amp; World Report</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">U.S. Public Ranking</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">20</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">U.S. Public Ranking</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">16</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">25%</p>
+          <p class="sp-chart-caption">Gain in numeric ranks</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">UMD programs ranked in the Top 25 nationally by U.S. News &amp; World Report</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of top 25 programs</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">67</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of top 25 programs</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">69</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">3%</p>
+          <p class="sp-chart-caption">Increase in top 25 programs</p>
+        </div>
+        </div>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Number of faculty elected into National Academies</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of national academy members</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">62</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Number of national academy members</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">84</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">35%</p>
+          <p class="sp-chart-caption">Increase in number of faculty</p>
+        </div>
+        </div>
+      <p class="sp-chart-footnote">Defined as: National Academy (Engineering, Science, Medicine, Education, Public Administration, Inventors); American Academy of Arts and Sciences. As of Dec. 31 of each year.</p>
+      </umd-stat-chart>
+
+      <umd-stat-chart>
+        <p class="sp-chart-label">Number of faculty receiving select awards and honorifics</p>
+        <div class="sp-chart-body">
+          <div class="sp-chart-table" data-cols="2">
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative number of awards and honorifics</span><span class="sp-chart-year">2021</span></div>
+            <p class="sp-chart-value">542</p>
+          </div>
+          <div class="sp-chart-col">
+            <div class="sp-chart-th"><span class="sp-chart-metric">Cumulative number of awards and honorifics</span><span class="sp-chart-year">2025</span></div>
+            <p class="sp-chart-value">641</p>
+          </div>
+          </div>
+        <div class="sp-chart-info" data-chart="up-arrow">
+          <svg class="sp-chart-glyph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 23" aria-hidden="true"><path d="M8 23V10l-4.5 4.5L0 11 11 0l11 11-3.5 3.5L14 10v13z" fill="#E21833"/></svg>
+          <p class="sp-chart-pct">18%</p>
+          <p class="sp-chart-caption">Increase in select awards and honorifics</p>
+        </div>
+        </div>
+      <p class="sp-chart-footnote">Defined as: National Academy (Engineering, Science, Medicine, Education, Public Administration, Inventors); American Academy of Arts and Sciences; Pulitzer Prize; Fulbright, Guggenheim, Sloan, and NEH fellowships; American Association for the Advancement of Science; NSF PECASE; Emmy, Grammy, Oscar, and Tony Awards; MacArthur Genius/Fellow; Fields Medal; Weiner Prize; National Medal of Science or Technology. Years are the award year or, in the case of Fulbright, the spring of the award year. As of Dec. 31 of each year.</p>
+      </umd-stat-chart>
+      </div>
+    </section>
+
+    <!-- NEWS — 4-up standard cards with ghost watermark -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <div class="umd-watermark" aria-hidden="true"><span>Strategic</span></div>
+        <umd-element-section-intro-wide>
+          <h2 slot="headline">News</h2>
+        </umd-element-section-intro-wide>
+        <div class="umd-layout-grid-columns-four umd-layout-grid-gap-four umd-animation-grid">
+          <umd-element-card data-visual-image-aligned="true">
+            <a slot="image" href="https://today.umd.edu/make-ai-a-force-that-is-uplifting-for-all-umd-leaders-declare-at-global-summit" target="_blank" rel="noopener"><img src="../images/impact/news-1.jpg" alt="IMG 3316 1920x1080" loading="lazy" /></a>
+            <p slot="eyebrow">Grand Challenges</p>
+            <h3 slot="headline"><a href="https://today.umd.edu/make-ai-a-force-that-is-uplifting-for-all-umd-leaders-declare-at-global-summit" target="_blank" rel="noopener">‘Make AI a Force That Is Uplifting for All,’ UMD Leaders Urge at Global Summit</a></h3>
+            <p slot="text">Pines, Daumé Join International Leaders, Tech Pioneers to Discuss AI’s Impact on Education and More</p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary">
+                <a href="https://today.umd.edu/make-ai-a-force-that-is-uplifting-for-all-umd-leaders-declare-at-global-summit" target="_blank" rel="noopener">Learn more</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card>
+          <umd-element-card data-visual-image-aligned="true">
+            <a slot="image" href="https://today.umd.edu/umd-celebrates-record-number-of-gilman-scholars" target="_blank" rel="noopener"><img src="../images/impact/news-2.jpg" alt="Pariya Ahmadi at solar facility in Vietnam Jan 2025 1920x1080" loading="lazy" /></a>
+            <p slot="eyebrow">Reimagine Learning</p>
+            <h3 slot="headline"><a href="https://today.umd.edu/umd-celebrates-record-number-of-gilman-scholars" target="_blank" rel="noopener">UMD Celebrates Record Number of Gilman Scholars</a></h3>
+            <p slot="text">Study-Abroad Opportunities for Students With Financial Need Rank Among Top 5 Nationally</p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary">
+                <a href="https://today.umd.edu/umd-celebrates-record-number-of-gilman-scholars" target="_blank" rel="noopener">Learn more</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card>
+          <umd-element-card data-visual-image-aligned="true">
+            <a slot="image" href="https://today.umd.edu/40k-philanthropic-challenge-celebrates-societal-impact" target="_blank" rel="noopener"><img src="../images/impact/news-3.jpg" alt="HJ Patterson Columns" loading="lazy" /></a>
+            <p slot="eyebrow">Public Good</p>
+            <h3 slot="headline"><a href="https://today.umd.edu/40k-philanthropic-challenge-celebrates-societal-impact" target="_blank" rel="noopener">$40K Philanthropic Challenge Celebrates Societal Impact</a></h3>
+            <p slot="text">6 Student Teams to Demonstrate How They ‘Do Good’ in Pitch Competition</p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary">
+                <a href="https://today.umd.edu/40k-philanthropic-challenge-celebrates-societal-impact" target="_blank" rel="noopener">Learn more</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card>
+          <umd-element-card data-visual-image-aligned="true">
+            <a slot="image" href="https://provost.umd.edu/news/nominate-today-the-terrapin-innovation-mvp-impact-awards" target="_blank" rel="noopener"><img src="../images/impact/news-4.jpg" alt="Terrapin Impact Staff Awards 2024" loading="lazy" /></a>
+            <p slot="eyebrow">People &amp; Communities</p>
+            <h3 slot="headline"><a href="https://provost.umd.edu/news/nominate-today-the-terrapin-innovation-mvp-impact-awards" target="_blank" rel="noopener">Nominations Open for Terrapin Innovation &amp; MVP Impact Awards</a></h3>
+            <p slot="text">Awards recognize staff members who exemplify a Fearlessly Forward attitude</p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary">
+                <a href="https://provost.umd.edu/news/nominate-today-the-terrapin-innovation-mvp-impact-awards" target="_blank" rel="noopener">Learn more</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA BAR — banner-promo, default gold theme (same closer as index.html) -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-banner-promo>
+          <p slot="text"><strong>FEARLESSLY FORWARD IN PURSUIT OF EXCELLENCE AND IMPACT FOR THE PUBLIC GOOD:</strong> THE UNIVERSITY OF MARYLAND STRATEGIC PLAN is a living document and will evolve and grow as we do. Please visit this site to follow our progress as we move fearlessly forward.</p>
+          <div slot="actions" class="banner-promo-actions">
+            <umd-element-call-to-action data-display="primary">
+              <a href="https://issuu.com/umaryland/docs/strategicplan2022?fr=sNDZhNTQ2MzkxOTM" target="_blank" rel="noopener">View Digital PDF (Issuu)</a>
+              <a href="https://strategic-plan.files.svdcdn.com/production/file/strategic-plan-text-2022-b.txt?dm=1699301204" slot="text" target="_blank" rel="noopener">Text Version</a>
+            </umd-element-call-to-action>
+          </div>
+        </umd-element-banner-promo>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <umd-element-footer data-display="visual">
+    <a slot="logo" href="https://strategicplan.umd.edu/">
+      <img src="../images/logos/footer-logo.svg" alt="University of Maryland Strategic Plan" />
+    </a>
+    <img slot="image" src="../images/strategic-plan/footer.png" alt="University of Maryland campus" />
+  </umd-element-footer>
+
+  <!-- GRID ENTRY ANIMATIONS — shared canonical script -->
+  <script src="../page-builder/scripts/grid-animations.js"></script>
+
+  <!-- NAV-HEADER LOGO WIDTH — shadow injection for strategic plan wordmark -->
+  <script>
+    (function () {
+      function inject(el) {
+        if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
+        el.__navHeaderLogoInjected = true;
+        var style = document.createElement('style');
+        style.textContent = '.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }';
+        el.shadowRoot.appendChild(style);
+      }
+      document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      customElements.whenDefined('umd-element-navigation-header').then(function () {
+        document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      });
+    })();
+  </script>
+
+  <!-- UMD-STAT-CHART — scroll-triggered glyph animations.
+       Mirrors the live site: IntersectionObserver at threshold 1 (element
+       fully visible) activates each infographic once; CSS transitions do
+       the motion (arrow slide-up, bar grow, donut arc sweep). -->
+  <script>
+    (function () {
+      var rails = document.querySelectorAll('[data-chart]');
+      if (!('IntersectionObserver' in window)) {
+        rails.forEach(function (r) { r.classList.add('is-active'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-active');
+            io.unobserve(entry.target); // one-shot (live site re-fires; don't copy that quirk)
+          }
+        });
+      }, { root: null, rootMargin: '0px', threshold: 1 });
+      rails.forEach(function (r) { io.observe(r); });
+    })();
+  </script>
+
+  <!-- UMD-TIMELINE — commitment filter + sliding card carousel.
+       Same mechanics as strategicplan.umd.edu/impact: filters are a union of
+       checked commitments; applying one fades the track out, rebuilds it from
+       the original card list, resets to the start, and fades back in. The
+       carousel slides one card per click (left offset, 0.5s CSS transition),
+       hides prev/next at the ends, debounces 500ms, and supports touch swipe
+       (>=90px). Resize re-applies the filter. -->
+  <script>
+    (function () {
+      var tl = document.querySelector('umd-timeline');
+      if (!tl) return;
+      var track = tl.querySelector('.sp-timeline-track');
+      var viewport = tl.querySelector('.sp-timeline-viewport');
+      var prev = tl.querySelector('.sp-timeline-prev');
+      var next = tl.querySelector('.sp-timeline-next');
+      var boxes = Array.prototype.slice.call(tl.querySelectorAll('.sp-timeline-filters input'));
+      var clearBtn = tl.querySelector('.sp-timeline-clear');
+      var allCards = Array.prototype.slice.call(track.children);
+      var busy = false;
+
+      function step() {
+        var card = track.querySelector('umd-timeline-card');
+        if (!card) return 0;
+        var gap = parseInt(getComputedStyle(track).gap, 10) || 24;
+        return card.offsetWidth + gap;
+      }
+      function minLeft() {
+        var s = step();
+        if (!s) return 0;
+        var visible = Math.max(Math.floor(viewport.clientWidth / s), 1);
+        return Math.min(-(track.children.length - visible) * s, 0);
+      }
+      function updateButtons(left) {
+        prev.hidden = left >= 0;
+        next.hidden = left <= minLeft();
+      }
+      function page(dir) {
+        if (busy) return;
+        var cur = parseFloat(getComputedStyle(track).left) || 0;
+        var target = dir === 'next' ? cur - step() : cur + step();
+        if (target > 0 || target < minLeft()) return;
+        busy = true;
+        track.style.left = target + 'px';
+        updateButtons(target);
+        setTimeout(function () { busy = false; }, 500);
+      }
+      function applyFilter() {
+        var active = boxes.filter(function (b) { return b.checked; }).map(function (b) {
+          return b.parentElement.getAttribute('data-color');
+        });
+        var keep = active.length
+          ? allCards.filter(function (c) { return active.indexOf(c.getAttribute('data-color')) !== -1; })
+          : allCards;
+        track.style.opacity = '0';
+        track.style.left = '0px';
+        setTimeout(function () {
+          track.innerHTML = '';
+          keep.forEach(function (c) { track.appendChild(c); });
+          track.style.opacity = '1';
+          updateButtons(0);
+        }, 500);
+      }
+
+      prev.addEventListener('click', function () { page('prev'); });
+      next.addEventListener('click', function () { page('next'); });
+      boxes.forEach(function (b) { b.addEventListener('change', applyFilter); });
+      clearBtn.addEventListener('click', function () {
+        boxes.forEach(function (b) { b.checked = false; });
+        applyFilter();
+      });
+
+      var touchX = null;
+      viewport.addEventListener('touchstart', function (e) {
+        touchX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      viewport.addEventListener('touchend', function (e) {
+        if (touchX === null) return;
+        var dx = e.changedTouches[0].screenX - touchX;
+        touchX = null;
+        if (Math.abs(dx) < 90) return;
+        page(dx < 0 ? 'next' : 'prev');
+      }, { passive: true });
+
+      var resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(applyFilter, 200);
+      });
+
+      applyFilter();
+    })();
+  </script>
+
+</body>
+</html>

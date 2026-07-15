@@ -65,6 +65,52 @@ Do **not** shadow-inject a panel onto the standard (no `data-display`) pathway �
 
 **Pages using this:** `pages/commitment/we-reimagine-learning.html` (5 initiative Details modals + 3 goal Objectives modals).
 
+## Impact page custom components (`pages/impact.html`)
+
+Two light-DOM custom tags (NOT design-system web components — never registered, no shadow DOM). Both are styled by the page's own `<style>` block and driven by inline scripts at the end of `<body>`. Mechanics mirror the live strategicplan.umd.edu/impact page; visuals follow the Figma comp.
+
+Why custom (per the CLAUDE.md registry-first rule): no DS carousel supports category filtering or these card visuals (`carousel-cards` is a dark-texture band of `umd-element-card` children with no filter UI), and `umd-element-stat` is a number/label lockup with no table or infographic rail.
+
+### `umd-stat-chart` — metric table + animated infographic rail
+
+- Structure: `.sp-chart-label` (bold 22px title) → `.sp-chart-body` (flex) → `.sp-chart-table[data-cols="2|4"]` + `.sp-chart-info[data-chart="up-arrow|bar|donut"]` → optional `.sp-chart-footnote` (red left rule).
+- The table is a CSS grid of `.sp-chart-col` wrappers (black header cell + red Barlow Condensed Bold Italic value). Column wrappers keep header/value pairs together at every viewport: 1 col < 480px, 2 cols ≥ 480px, and `data-cols="4"` gets 4 columns at ≥ 1024px. Header cells use `flex: 1` so the black bands stay equal-height when one label wraps.
+- **Supports up to 4 columns** (`data-cols="4"` — used by the expenditures chart per the comp).
+- Glyphs for >100% or share stats are editorial choices per the comp: `up-arrow` (default), `bar` (mini gold+red bar chart, used for 368%), `donut` (gold SVG ring, used for 99%; arc length set via `--sp-donut-offset` inline on the SVG).
+- **Scroll animations** (same contract as the live site): an IntersectionObserver at `threshold: 1` adds `.is-active` once per rail and unobserves (the live site re-fires and errors on the donut — don't copy). CSS transitions do the motion: arrow slides up 30px / 0.5s ease-in, bars grow via `scaleY` staggered, donut arc sweeps via `stroke-dashoffset` over 1s. All gated behind `prefers-reduced-motion: no-preference`; the live site's Chart.js doughnut is replaced by a dependency-free SVG ring.
+
+### `umd-timeline` — commitment-filtered card carousel
+
+- Filter pills are checkboxes (`.sp-timeline-filters div[data-color]`), one per commitment; checked pills show a ✕. Selection is a **union**; empty selection = all cards. `data-color` values: `red` = Reimagine Learning, `gold` = Grand Challenges, `lightGray` = Invest in People, `darkGray` = Partner/Public Good.
+- Applying a filter fades the track out (0.5s), rebuilds it from the original card list (document order preserved), resets `left: 0`, fades back in. "Clear all" unchecks everything. Window resize re-applies the filter (debounced 200ms).
+- The carousel is NOT scroll-snap: a flex track slid one card per click by setting inline `left` (card offsetWidth + gap, 0.5s ease-in-out CSS transition), 500ms debounce, prev/next auto-hide at the ends (`hidden` attribute), touch swipe ≥ 90px pages one card.
+- Cards (`umd-timeline-card[data-color]`): 4px right+bottom border and overlapping date chip in the category color, vertical ghost year (`writing-mode: vertical-rl`, Interstate 900 44px #E6E6E6) over the image's right rail, title/deck/arrow link.
+
+### Section intro works text-only (registry correction)
+
+`registry-content.json` marks the section-intro `headline` slot as required, but `umd-element-section-intro` renders correctly with only `slot="text"` + `slot="actions"` — the impact page's centered intro (red separator, bold centered paragraph, CTA) uses exactly that. Don't hand-roll this pattern.
+
+## Watermark utility — ghost word needs its own wrapper
+
+`.umd-watermark > *` (shared style block §2) styles **every direct child** as an absolute 240px ghost word. Never put the class on a content wrapper — wrap only the ghost word and let it overlay siblings:
+
+```html
+<!-- ✓ Correct (impact.html News section) -->
+<div class="umd-layout-space-horizontal-larger">
+  <div class="umd-watermark" aria-hidden="true"><span>Strategic</span></div>
+  <h2 ...>News</h2>
+  ...
+</div>
+
+<!-- ✗ Wrong — heading and grid also become giant watermark text and break paint -->
+<div class="umd-layout-space-horizontal-larger umd-watermark">
+  <p>Strategic</p>
+  <h2 ...>News</h2>
+</div>
+```
+
+Pages using this: `pages/impact.html`.
+
 ## Pathway sticky (first pathway)
 
 The first `umd-element-pathway` on `pages/index.html` is sticky (scrolls with the viewport until it reaches its scroll boundary). Standard pathway component with `position: sticky` applied via a wrapper or shadow injection as needed.

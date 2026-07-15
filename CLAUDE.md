@@ -81,6 +81,18 @@ Always include the `onerror` runtime fallback for hotlink-protected URLs (see pa
 
 ## Custom components (not in the design system)
 
+### Registry first — never invent what the submodule already ships
+
+Before hand-rolling ANY page element — section headers, intros, grids, cards, stats, CTAs, banners — search the registry for an existing component:
+
+1. Skim `page-builder/registry/registry-index.json` for the category, then open the category file it points to (e.g. `registry-content.json`).
+2. Match on **slots, attributes, and aliases**, not just component names — e.g. a "left-aligned section heading" is `section-intro-wide`, a "grid label with a View All link" is also `section-intro-wide`, a stat lockup is `stat`.
+3. If a `umd-element-*` component covers the pattern, use it and layer project styling via `OVERRIDES.md` conventions. Do not rebuild it as bare HTML/CSS, even if that seems quicker.
+
+A custom component is justified only when **no registry component matches the required slots/behavior**, or the visual genuinely has no DS counterpart (e.g. the Venn diagram, the impact timeline). Registry `required: true` flags can overstate — a component may render fine without that slot (e.g. section-intro works text-only; see OVERRIDES.md) — so test the component before ruling it out. Every custom component must be documented in this repo's `OVERRIDES.md` with a sentence on why no design-system component fit.
+
+(Cautionary example: the Impact page's News header was initially built as a bare styled `<h2>` when `umd-element-section-intro-wide` already existed — caught in review. Check the registry first.)
+
 ### Strategic Commitments Venn diagram
 
 The home page includes a custom Venn diagram showing four overlapping circles ("We Reimagine Learning", "We Take On Humanity's Grand Challenges", "We Partner to Advance the Public Good", "We Invest in People and Communities") with "FEARLESSLY FORWARD" at the center. This visual does not map to any existing design-system component and should be implemented as a self-contained custom HTML/CSS/SVG block. It does **not** need to exist upstream in the page-builder design system.
