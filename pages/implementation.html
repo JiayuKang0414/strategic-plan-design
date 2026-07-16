@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementation — Fearlessly Forward | University of Maryland</title>
+  <meta name="description" content="How the University of Maryland implements Fearlessly Forward — annual priority setting and initiatives, investment in infrastructure and support, community input and engagement, and assessment of our progress.">
+
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/font-faces.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/tokens.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/base.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/typography.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/web-components.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@universityofmaryland/web-styles-library/css/layout.min.css">
+  <style>
+/* ============================================================
+   1. COMPONENT REGISTRATION GAP-FILLS
+   Re-add :defined rules for components missing from upstream
+   web-components.min.css. As those land upstream, drop these.
+   ============================================================ */
+
+/* umd-element-utility-header — present on every page (band above the
+   nav header). Not in upstream bundle as of v1.8.11. */
+umd-element-utility-header:not(:defined) { content-visibility: hidden; }
+umd-element-utility-header { display: block; container-type: normal; }
+
+/* umd-element-carousel* — not in upstream bundle. */
+umd-element-carousel:not(:defined),
+umd-element-carousel-cards:not(:defined),
+umd-element-carousel-thumbnail:not(:defined),
+umd-element-carousel-image:not(:defined),
+umd-element-carousel-image-wide:not(:defined),
+umd-element-carousel-multiple-image:not(:defined) {
+  content-visibility: hidden;
+}
+umd-element-carousel,
+umd-element-carousel-cards,
+umd-element-carousel-thumbnail,
+umd-element-carousel-image,
+umd-element-carousel-image-wide,
+umd-element-carousel-multiple-image {
+  display: block;
+  container-type: inline-size;
+}
+
+/* umd-layout-image-expand — full-bleed pseudo-component.
+   Width:100% is project-specific (collapses without it). */
+umd-layout-image-expand:not(:defined) { content-visibility: hidden; }
+umd-layout-image-expand {
+  display: block;
+  container-type: inline-size;
+  width: 100%;
+}
+
+/* Project-specific spacing for breadcrumb (not a default in upstream). */
+umd-element-breadcrumb:defined { margin-top: 16px; }
+
+
+/* ============================================================
+   2. WATERMARK DECORATION
+   ============================================================ */
+:is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+  position: absolute;
+  top: 20px;
+  left: -2%;
+  color: #f1f1f1;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: min(calc(44px + 13vw), 240px);
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+:is(.umd-text-decoration-watermark, .umd-watermark):not(.umd-watermark-dark) > * {
+  opacity: 0.6;
+  z-index: -1;
+}
+.umd-watermark-dark > * {
+  opacity: 0.12;
+  z-index: inherit;
+}
+@keyframes slide-in-from-left {
+  from { transform: translate(-15vw); }
+  to   { transform: translate(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    :is(.umd-text-decoration-watermark, .umd-watermark, .umd-watermark-dark) > * {
+      animation: slide-in-from-left forwards;
+      animation-timeline: view();
+      animation-range-start: 0;
+      animation-range-end: 100vh;
+      transform: translate(-15vw);
+    }
+  }
+}
+
+
+/* ============================================================
+   3. LAYOUT AUGMENTATIONS
+   Extra properties on upstream layout classes that layout.min.css
+   doesn't include. These cascade over the upstream rules.
+   ============================================================ */
+
+/* Upstream sets max-width/padding correctly. These extra properties are
+   required for watermark positioning and the internal @container query
+   used by umd-element-section-intro-wide. */
+.umd-layout-space-horizontal-larger {
+  position: relative;
+  container-type: inline-size;
+  isolation: isolate;
+}
+
+/* Upstream omits align-items and flex-shrink on the columns-left layout.
+   align-items: flex-start prevents variable-height sidebar from stretching;
+   flex-shrink: 0 keeps the fixed 242px sidebar width under constraint.
+   Breakpoint matches upstream desktop.min (1024px) after DSYS-3063 fix —
+   sidebar width/margin moved from tablet.min (768px) to desktop.min. */
+@media (min-width: 1024px) {
+  .umd-layout-space-columns-left { align-items: flex-start; }
+  .umd-layout-space-columns-left > *:first-child { flex-shrink: 0; }
+}
+
+
+/* ============================================================
+   4. BACKGROUND-FULL-DARK BUG FIX
+   layout.min.css serializes the highDef breakpoint as
+   @media([object Object]) — ignored by browsers — because
+   background/full.ts:42 uses media.queries.highDef (the whole
+   object) instead of media.queries.highDef.min. This rule
+   cascades over the broken upstream with the correct breakpoint.
+   ============================================================ */
+.umd-layout-background-full-dark {
+  background-color: #000000;
+  padding: 48px 0;
+}
+@media (min-width: 768px) {
+  .umd-layout-background-full-dark { padding: 80px 0; }
+}
+@media (min-width: 1200px) {
+  .umd-layout-background-full-dark { padding: 104px 0; }
+}
+
+
+/* ============================================================
+   5. MASONRY SECTION-INTRO COMPANION
+   The base .umd-layout-grid-masonry class is provided by layout.min.css (CDN).
+   This rule compensates for masonry's negative top margin when a section
+   intro immediately precedes it — layout.min.css does not include this fix.
+   ============================================================ */
+@media (min-width: 768px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 32px; }
+}
+@media (min-width: 1024px) {
+  umd-element-section-intro + .umd-layout-grid-masonry,
+  umd-element-section-intro-wide + .umd-layout-grid-masonry { padding-top: 40px; }
+}
+
+
+/* ============================================================
+   6. COLOR UTILITIES — not in upstream tokens or typography bundles
+   ============================================================ */
+.text-black { color: #000; }
+.text-white { color: #ffffff; }
+
+
+/* ============================================================
+   7. RICH TEXT ADVANCED — editorial body copy
+   Light and dark variants. 18px/1.5em with link hover styles.
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-rich-advanced with the same base sizing and link
+   animation. This section is kept as an intentional DELTA:
+   upstream only colors list content #454545; we force it on
+   all descendants. Do not delete without visual verification.
+   ============================================================ */
+
+/* Light variant */
+.umd-text-rich-advanced {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced * {
+  color: #454545;
+}
+.umd-text-rich-advanced > * {
+  font-size: 18px;
+  margin-top: 24px;
+}
+.umd-text-rich-advanced > *:first-child {
+  margin-top: 0;
+}
+.umd-text-rich-advanced a {
+  color: #000000;
+  background-image: linear-gradient(#000000, #000000);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced a:hover,
+.umd-text-rich-advanced a:focus {
+  background-image: linear-gradient(#E21833, #E21833);
+}
+
+/* Dark variant */
+.umd-text-rich-advanced-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+}
+.umd-text-rich-advanced-dark p,
+.umd-text-rich-advanced-dark li { color: #ffffff; }
+.umd-text-rich-advanced-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-advanced-dark a:hover,
+.umd-text-rich-advanced-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   8. INTERIOR PAGE LAYOUT UTILITIES
+   ============================================================ */
+
+/* Content column max-width (Tailwind utility) */
+.max-w-\[800px\] { max-width: 800px; }
+
+
+/* ============================================================
+   9. IMAGE-EXPAND CONTENT UTILITIES
+   Classes for div[slot="content"] inside umd-layout-image-expand.
+   ============================================================ */
+.max-w-\[480px\] { max-width: 480px; }
+.w-full          { width: 100%; }
+.block           { display: block; }
+.mr-auto         { margin-right: auto; }
+.ml-auto         { margin-left: auto; }
+.pl-md           { padding-left: 24px; }
+
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text) { position: relative; }
+:is(.umd-text-line-adjustent, .umd-adjacent-line-text)::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #E21833;
+  left: -24px;
+}
+
+/* Body copy on dark/image backgrounds — white text, animated underline links */
+.umd-text-rich-simple-large-dark {
+  font-size: 18px;
+  line-height: 1.5em;
+  color: #ffffff;
+}
+.umd-text-rich-simple-large-dark * { color: #ffffff; }
+.umd-text-rich-simple-large-dark > * { font-size: 18px; margin-top: 24px; }
+.umd-text-rich-simple-large-dark > *:first-child { margin-top: 0; }
+.umd-text-rich-simple-large-dark a {
+  color: #ffffff;
+  background-image: linear-gradient(#ffffff, #ffffff);
+  position: relative;
+  background-position: left calc(100% - 1px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  transition: color 0.5s, background-size 0.5s, background-image 0.5s, background-position 0.5s;
+}
+.umd-text-rich-simple-large-dark a:hover,
+.umd-text-rich-simple-large-dark a:focus {
+  background-image: linear-gradient(#FFD200, #FFD200);
+}
+
+
+/* ============================================================
+   10. STICKY COLUMNS UTILITIES
+   Spacing tokens for slot content inside umd-element-sticky-columns.
+   ============================================================ */
+.mb-md { margin-bottom: 24px; }
+.mb-sm { margin-bottom: 16px; }
+
+
+/* ============================================================
+   11. UTILITY NAVIGATION / SHELL-ITEM LINK STYLES
+   The shadow DOM ::slotted(*) only reaches div[slot="utility-navigation"],
+   NOT descendants — all link and separator styles must live here.
+
+   Canonical production pattern (matches umd.edu markup):
+   - Slot container: plain <div slot="utility-navigation">
+   - Each item: div.umd-shell-utility-item > div.umd-shell-utility-actions
+                > a.umd-sans-smaller (or button for dropdowns)
+   - Dropdown: sibling div.umd-shell-utility-links[aria-hidden] panel
+
+   TWO LAYERS — keep them separate:
+   A. BASE (unscoped) — the reusable .umd-shell-utility-item pattern.
+      Used in the nav-header utility slot AND reused in pathway /
+      banner-promo / section-intro action slots (RULES.md §5). These
+      rules MUST stay unscoped or the reuse renders unstyled.
+   B. NAV-HEADER (scoped) — overrides the shadow ::slotted(*) gap:24px
+      and adds dropdown anchoring + panel. Only meaningful in the slot.
+   ============================================================ */
+
+/* ---- A. BASE: reusable shell-item pattern (do NOT scope) ---- */
+.umd-shell-utility-item .umd-shell-utility-actions {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+.umd-shell-utility-item:not(:last-child) .umd-shell-utility-actions {
+  border-right: 1px solid #E6E6E6;
+  margin-right: 16px;
+  padding-right: 16px;
+}
+.umd-shell-utility-item a {
+  color: #242424;
+  text-decoration: none;
+}
+.umd-shell-utility-item a:hover,
+.umd-shell-utility-item a:focus {
+  color: #E21833;
+}
+
+/* ---- B. NAV-HEADER: scoped to the utility-navigation slot ---- */
+/* Override the shadow ::slotted(*) gap:24px (the wrapper margins above
+   handle item spacing in the shell pattern). */
+umd-element-navigation-header div[slot="utility-navigation"] {
+  gap: 0;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item {
+  position: relative;
+  z-index: 99999;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item button {
+  color: #242424;
+  text-decoration: none;
+}
+/* Dropdown panel (shown via JS toggling aria-hidden — see LAYOUT-PATTERNS.md) */
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links {
+  display: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links > * {
+  color: #242424;
+  display: block;
+  padding: 12px;
+  text-align: right;
+  text-decoration: none;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:hover,
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links a:focus {
+  color: #a90007;
+}
+umd-element-navigation-header div[slot="utility-navigation"] .umd-shell-utility-item .umd-shell-utility-links[aria-hidden="false"] {
+  align-items: flex-end;
+  background-color: #fafafa;
+  box-shadow: -1px 9px 32px -10px rgba(0, 0, 0, .19);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  top: 16px;
+  width: 200px;
+  max-width: 80vw;
+}
+
+
+/* ============================================================
+   12. BANNER-PROMO STACKED ACTIONS — light-DOM column flex.
+   Pairs with the shadow-DOM injection in OVERRIDES.md so the 8px
+   gap is visible regardless of where children render.
+   ============================================================ */
+.banner-promo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+
+/* ============================================================
+   13. SECTION DIVIDER — standalone <hr> utility.
+   ============================================================ */
+.umd-text-divider {
+  border: none;
+  border-top: 1px solid #000000;
+  margin: 0 0 24px 0;
+}
+.umd-text-divider.dark {
+  border-top-color: #ffffff;
+}
+
+
+/* ============================================================
+   14. TRAILING-LINE LABEL — section eyebrow with horizontal line
+   Source: @universityofmaryland/web-styles-library: element.text.line.trailing
+
+   NOTE: element.min.css (linked in TEMPLATE.html) now ships
+   .umd-text-line-trailing / -light / -dark. This section is kept
+   as an intentional DELTA: we add font-weight: 700 (upstream
+   omits it) and use #000 for the dark background (upstream uses
+   #242424). Do not delete without visual verification.
+   ============================================================ */
+.umd-text-line-trailing,
+.umd-text-line-trailing-dark {
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1.42em;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+.umd-text-line-trailing::before,
+.umd-text-line-trailing-dark::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 0;
+  width: 100vw;
+  height: 1px;
+  background: #000000;
+  z-index: 1;
+}
+.umd-text-line-trailing > span,
+.umd-text-line-trailing-dark > span {
+  position: relative;
+  background-color: inherit;
+  padding-right: 8px;
+  z-index: 2;
+}
+.umd-text-line-trailing + *,
+.umd-text-line-trailing-dark + * {
+  margin-top: 40px;
+}
+.umd-text-line-trailing-dark {
+  background-color: #000000;
+  color: #ffffff;
+}
+.umd-text-line-trailing-dark::before {
+  background: #ffffff;
+}
+
+
+/* ============================================================
+   15. NOTE — GRID CLASSES FROM LAYOUT.MIN.CSS (CDN)
+   All standard grid classes are provided by layout.min.css loaded
+   from CDN in the <head>. Do NOT add them here — that duplicates CSS.
+
+   Available from CDN (layout.min.css):
+     umd-layout-grid-columns-two/three/four  — no-gap at tablet+
+     umd-layout-grid-gap-stacked/two/three/four  — 32px gap at all bp
+     umd-layout-grid-gap-two  — widens to 40px at 1024px
+     umd-layout-grid-child-fill-height  — height:100% on item + child
+     umd-layout-grid-inline-tablet-rows  — flex CTA row at 650px+
+     umd-layout-grid-masonry  — 2-col staggered (base CSS)
+     umd-layout-grid-offset-three  — 3-col staircase offset
+     umd-layout-grid-border-two/three/four  — bordered cell grids
+
+   Only add grid-related CSS here when it is genuinely absent from
+   layout.min.css (e.g. shellcraft-only classes like umd-animation-grid
+   and umd-shell-person-grid-helper padding).
+   ============================================================ */
+
+
+/* ============================================================
+   16. RETIRED — OVERLAY CARD .size-large MIN-HEIGHT
+   Now shipped verbatim by web-components.min.css (linked in
+   TEMPLATE.html): umd-element-card-overlay.size-large
+   {min-height: 320px; 560px @768px}. Section number reserved —
+   do NOT renumber later sections when retiring a rule.
+   ============================================================ */
+
+
+/* ============================================================
+   17. TUITION & AID 2-COLUMN GRID
+   Asymmetric content split: 1.5fr / 1fr at 1024px+.
+   ============================================================ */
+.umd-layout-grid-tuition-two {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .umd-layout-grid-tuition-two {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 80px;
+  }
+}
+
+
+/* ============================================================
+   18. FULL-WIDTH OUTLINE BUTTON — light-DOM utility class
+   Visually mirrors umd-element-call-to-action data-display="outline"
+   but stretches to fill its grid cell. Use when the DS web component's
+   shadow-DOM max-width:380px would fight against your layout.
+   ============================================================ */
+.umd-action-outline-block {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 24px;
+  font-family: "Interstate", Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.28em;
+  text-align: center;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #242424;
+  color: #000000;
+  transition: background 0.5s ease-in-out, border 0.5s ease-in-out, color 0.5s ease-in-out;
+}
+.umd-action-outline-block:hover,
+.umd-action-outline-block:focus {
+  background-color: #242424;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark {
+  background-color: transparent;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+}
+.umd-action-outline-block.dark:hover,
+.umd-action-outline-block.dark:focus {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+
+/* ============================================================
+   19. BORDER GRID — person-grid-helper container query + padding
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   Verified from: https://umd.edu/about/university-presidents
+
+   The base umd-layout-grid-border-two/three/four grid CSS is
+   provided by layout.min.css (CDN). Only the container query
+   setup and the umd-shell-person-grid-helper responsive padding
+   are absent from layout.min.css — those come from shellcraft.
+
+   Usage: add class="umd-shell-person-grid-helper" to every
+   umd-element-person host inside a border grid.
+   ============================================================ */
+
+/* Establishes named container for padding queries */
+[class*="umd-layout-grid-border-two"],
+[class*="umd-layout-grid-border-three"],
+[class*="umd-layout-grid-border-four"] {
+  container: umd-shell-person-grid-helper / inline-size;
+}
+
+/* Responsive cell padding (24px → 32px → 48px) */
+[class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+[class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+  padding: 24px;
+  transition: padding 0.5s ease-in-out;
+}
+@container umd-shell-person-grid-helper (min-width: 650px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 32px;
+  }
+}
+@container umd-shell-person-grid-helper (min-width: 1024px) {
+  [class*="umd-layout-grid-border-two"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-three"] .umd-shell-person-grid-helper,
+  [class*="umd-layout-grid-border-four"] .umd-shell-person-grid-helper {
+    padding: 48px;
+  }
+}
+
+
+/* ============================================================
+   20. ANIMATION GRID — JS-driven scroll-reveal initial state
+   Source: umd.edu shellcraft (umdApp-release-116.css)
+   NOT in layout.min.css — must be here.
+
+   Sets children to invisible + translated as an initial state.
+   A JS scroll observer adds a class/style to reveal them in
+   sequence. Use on grid wrappers (offset grid, gap-stacked in
+   sticky-columns) to get the entrance animation.
+
+   Respects prefers-reduced-motion — no animation if reduced.
+
+   animation.min.css (linked in TEMPLATE.html) ships the same
+   initial state UNGUARDED (.umd-animation-grid > * always gets
+   opacity: 0) plus the fade-in-from-bottom keyframes and the
+   .umd-animation-transition-fade-bottom reveal class. The
+   reduce block below cancels the upstream rule so content is
+   never hidden for reduced-motion users.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .umd-animation-grid > * {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .umd-animation-grid > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+
+/* ============================================================
+   21. SLIDER OVERFLOW CONTAINMENT
+   umd-element-slider-events (and other carousel/slider components)
+   expand beyond the viewport during transitions, causing horizontal
+   scroll at the document level. overflow: hidden on the section
+   alone is not sufficient.
+
+   clip (not hidden) is intentional: overflow-x: hidden promotes
+   the element to a scroll container, which breaks scroll-driven
+   animations (animation-timeline: scroll()) and shifts
+   IntersectionObserver offsets. overflow-x: clip suppresses
+   the scroll bar without creating a scroll container.
+   ============================================================ */
+body { overflow-x: clip; }
+
+
+/* ============================================================
+   22. DARK → LIGHT SECTION TRANSITION GAP
+   When a full-bleed dark section (.umd-layout-background-full-dark)
+   is immediately followed by a default/light section, inject 120px
+   of white breathing room between them.
+
+   Conditional: dark-after-dark gets no extra gap — the adjacent
+   sibling selector only fires when the following section lacks the
+   dark class. Add overflow: hidden to the dark section if its
+   content bleeds into this gap.
+   ============================================================ */
+.umd-layout-background-full-dark + section:not(.umd-layout-background-full-dark) {
+  margin-top: 120px;
+}
+
+
+/* ============================================================
+   23. FILTER BAND COMPANIONS — page-built pieces of the
+   filterable-listing pattern (see LAYOUT-PATTERNS.md "Filter
+   Band"). The band itself uses upstream classes
+   (umd-layout-background-highlight-light, umd-text-line-trailing-
+   light, umd-field-select-wrapper, umd-animation-line-slide-*,
+   sr-only — element/animation/accessibility bundles). Only the
+   search row, results count, and divider list below are absent
+   upstream. Behavior comes from scripts/filter-band.js.
+   ============================================================ */
+.umd-filter-search-row {
+  display: flex;
+  align-items: stretch;
+}
+.umd-filter-search-row input[type="text"] {
+  flex: 1;
+  padding: 12px 16px;
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 16px;
+  line-height: 1.375em;
+  border: 1px solid #c0c0c0;
+  border-right: none;
+  color: #242424;
+  background: #fff;
+  min-width: 0;
+}
+.umd-filter-search-row input[type="text"]:focus {
+  outline: 2px solid #E21833;
+  outline-offset: 0;
+}
+.umd-filter-search-btn {
+  background-color: #E21833;
+  border: none;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+.umd-filter-search-btn:hover,
+.umd-filter-search-btn:focus {
+  background-color: #a90007;
+  outline: none;
+}
+.umd-filter-search-btn svg {
+  fill: #fff;
+  width: 20px;
+  height: 20px;
+}
+.umd-filter-results-count {
+  font-family: Interstate, Helvetica, Arial, Verdana, sans-serif;
+  font-size: 14px;
+  color: #454545;
+  margin: 24px 0 0;
+}
+
+/* Divider list — zero-gap stack with rules between visible items */
+.umd-filter-list {
+  gap: 0 !important;
+  margin-top: 56px;
+}
+.umd-filter-list > .umd-filter-item {
+  padding-bottom: 24px;
+  border-bottom: 1px solid #d0d0d0;
+}
+.umd-filter-list > .umd-filter-item + .umd-filter-item {
+  padding-top: 24px;
+}
+.umd-filter-list > .umd-filter-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.umd-filter-list > .umd-filter-item[hidden] + .umd-filter-item {
+  padding-top: 0;
+}
+.umd-filter-item[hidden] { display: none !important; }
+  </style>
+
+  <style>
+/* ============================================================
+   PAGE-SPECIFIC — Implementation
+   All sections are design-system components plus rich text and
+   image blocks; the classes below only supply the comp's
+   in-section rhythm and figure containment. See OVERRIDES.md.
+   ============================================================ */
+
+/* Header→hero gap parity (same rationale as impact.html). */
+.sp-hero-offset { padding-top: 48px; }
+
+/* Narrow article column (992px lock) — in-section stack rhythm per
+   the comp: 48px after a section intro comes from
+   umd-layout-vertical-landing-child on the intro; successive
+   article elements (rich text / image / rich text) sit 32px apart. */
+.sp-article > * + * { margin-top: 32px; }
+.sp-article img { display: block; width: 100%; height: auto; }
+
+/* Contained figure blocks (image inside a horizontal lock). */
+.sp-figure img { display: block; width: 100%; height: auto; }
+/* The terrapin-shell illustration is narrower than the lock (1042px
+   centered per the comp). */
+.sp-figure-narrow { max-width: 1042px; margin: 0 auto; }
+
+/* Committee rosters inside accordion text: tighten the list that
+   follows each role label so label+names read as one group. */
+.sp-roster p + ul { margin-top: 8px; }
+  </style>
+
+  <script src="https://unpkg.com/@universityofmaryland/web-components-library@1.18.12/dist/cdn.js"></script>
+</head>
+<body>
+
+  <!-- 1. GLOBAL UNIVERSITY HEADER -->
+  <umd-element-navigation-utility data-alert-off="true" role="navigation" aria-label="Utility navigation"></umd-element-navigation-utility>
+  <umd-element-utility-header></umd-element-utility-header>
+
+  <!-- 2. SITE NAVIGATION HEADER -->
+  <umd-element-navigation-header
+    sticky
+    class="umd-layout-space-horizontal-full">
+    <a slot="logo" href="index.html">
+      <img src="../images/logos/strategic-plan-logo.svg" alt="University of Maryland Strategic Plan"
+           onerror="this.onerror=null;this.src='../images/logos/primary-logo-dark.svg';" />
+    </a>
+    <nav slot="main-navigation">
+      <umd-element-nav-item>
+        <a slot="primary-link" href="principles.html">Guiding Principles</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="strategic-commitments.html">Strategic Commitments</a>
+        <div slot="dropdown-links">
+          <a href="commitment/we-reimagine-learning.html">We Reimagine Learning</a>
+          <a href="commitment/we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a>
+          <a href="commitment/we-invest-in-people-and-communities.html">We Invest in People and Communities</a>
+          <a href="commitment/we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a>
+        </div>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="implementation.html">Implementation</a>
+      </umd-element-nav-item>
+      <umd-element-nav-item>
+        <a slot="primary-link" href="impact.html">Impact</a>
+      </umd-element-nav-item>
+    </nav>
+    <div slot="primary-slide-links">
+      <a href="principles.html"><span>Guiding Principles</span></a>
+      <a href="strategic-commitments.html" data-child-ref="strategic-commitments"><span>Strategic Commitments</span></a>
+      <a href="implementation.html"><span>Implementation</span></a>
+      <a href="impact.html"><span>Impact</span></a>
+    </div>
+    <div slot="children-slides">
+      <div data-parent-ref="strategic-commitments">
+        <a href="commitment/we-reimagine-learning.html"><span>We Reimagine Learning</span></a>
+        <a href="commitment/we-take-on-humanitys-grand-challenges.html"><span>We Take On Humanity's Grand Challenges</span></a>
+        <a href="commitment/we-invest-in-people-and-communities.html"><span>We Invest in People and Communities</span></a>
+        <a href="commitment/we-partner-to-advance-the-public-good.html"><span>We Partner to Advance the Public Good</span></a>
+      </div>
+    </div>
+  </umd-element-navigation-header>
+
+  <main>
+
+    <!-- 3. HERO — stacked, centered text + contained full-width image
+         (same attribute set and sp-hero-offset rationale as impact.html;
+         no eyebrow per the comp). -->
+    <section class="umd-layout-vertical-landing sp-hero-offset">
+      <umd-element-hero data-display="stacked" data-layout-space-horizontal="large" data-layout-height="small" data-animation="true" data-layout-position="80">
+        <img slot="image" src="../images/implementation/hero-mckeldin-aerial.jpg" alt="Aerial view of McKeldin Mall and McKeldin Library on the University of Maryland campus" />
+        <h1 slot="headline">Implementing Our Plan</h1>
+        <div slot="text">
+          <p>The implementation of <em>Fearlessly Forward</em> has several key components, including annual priority setting and initiatives, investing in infrastructure and support, community input and engagement, and assessing our progress. Learn more about that work on this page.</p>
+        </div>
+      </umd-element-hero>
+    </section>
+
+    <!-- 4. ANNUAL REPORTS — dark card carousel (full-bleed texture band).
+         Intro lockup + one dark overlay card (text-only variant — no image,
+         no type attr) per annual progress report; headline
+         and Learn More both open the PDF, the text slot carries the
+         plain-text alternative. -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-carousel-cards>
+        <h2 slot="headline">Annual Reports</h2>
+        <p slot="text">Telling our stories and tracking our progress</p>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="secondary" data-theme="dark">
+            <a href="impact.html">Learn more about our impact</a>
+          </umd-element-call-to-action>
+        </div>
+        <div slot="cards">
+          <umd-element-card-overlay data-theme="dark">
+            <p slot="eyebrow">Fearlessly Forward</p>
+            <h3 slot="headline"><a href="https://strategic-plan.files.svdcdn.com/production/file/2026-Senate-Presentation-PDF-for-Website.pdf?dm=1776802660" target="_blank" rel="noopener">2026 Annual Progress Report</a></h3>
+            <p slot="text"><a href="https://strategic-plan.files.svdcdn.com/production/file/2026-Senate-Presentation-Plain-Text-for-Website.txt?dm=1776802733" target="_blank" rel="noopener">Plain text version</a></p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary" data-theme="dark">
+                <a href="https://strategic-plan.files.svdcdn.com/production/file/2026-Senate-Presentation-PDF-for-Website.pdf?dm=1776802660" target="_blank" rel="noopener"><svg title="document icon" aria-hidden="true" id="icon-document" data-name="icon-document" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><style>.cls-1 { fill-rule: evenodd; }</style></defs><path class="cls-1" d="m83.12,23.3v.63h-17.26s0-16.99,0-16.99l17.26,16.36ZM60.19,6v23.6h22.93s0,60.4,0,60.4H13V6h47.19Zm7.55,34.09H29.04v8h38.7v-8Zm-38.7,18.1h38.7v8H29.05v-8Z"></path></svg>Download</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card-overlay>
+          <umd-element-card-overlay data-theme="dark">
+            <p slot="eyebrow">Fearlessly Forward</p>
+            <h3 slot="headline"><a href="https://strategic-plan.files.svdcdn.com/production/file/Aug-updates-2__of-FINAL-Strategic-Plan-Senate-Presentation-April-2025.pdf?dm=1756224667" target="_blank" rel="noopener">2025 Annual Progress Report</a></h3>
+            <p slot="text"><a href="https://strategic-plan.files.svdcdn.com/production/file/FINAL-Strategic-Plan-Senate-Presentation-April-2025.txt?dm=1747405176" target="_blank" rel="noopener">Plain text version</a></p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary" data-theme="dark">
+                <a href="https://strategic-plan.files.svdcdn.com/production/file/Aug-updates-2__of-FINAL-Strategic-Plan-Senate-Presentation-April-2025.pdf?dm=1756224667" target="_blank" rel="noopener"><svg title="document icon" aria-hidden="true" id="icon-document" data-name="icon-document" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><style>.cls-1 { fill-rule: evenodd; }</style></defs><path class="cls-1" d="m83.12,23.3v.63h-17.26s0-16.99,0-16.99l17.26,16.36ZM60.19,6v23.6h22.93s0,60.4,0,60.4H13V6h47.19Zm7.55,34.09H29.04v8h38.7v-8Zm-38.7,18.1h38.7v8H29.05v-8Z"></path></svg>Download</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card-overlay>
+          <umd-element-card-overlay data-theme="dark">
+            <p slot="eyebrow">Fearlessly Forward</p>
+            <h3 slot="headline"><a href="https://strategic-plan.files.svdcdn.com/production/file/Strategic-Plan-Progress-Report-2024-PDF.pdf?dm=1715101955" target="_blank" rel="noopener">2024 Annual Progress Report</a></h3>
+            <p slot="text"><a href="https://strategic-plan.files.svdcdn.com/production/file/Strategic-Plan-Progress-Report-2024-Plain-Text.txt?dm=1715110852" target="_blank" rel="noopener">Plain text version</a></p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary" data-theme="dark">
+                <a href="https://strategic-plan.files.svdcdn.com/production/file/Strategic-Plan-Progress-Report-2024-PDF.pdf?dm=1715101955" target="_blank" rel="noopener"><svg title="document icon" aria-hidden="true" id="icon-document" data-name="icon-document" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><style>.cls-1 { fill-rule: evenodd; }</style></defs><path class="cls-1" d="m83.12,23.3v.63h-17.26s0-16.99,0-16.99l17.26,16.36ZM60.19,6v23.6h22.93s0,60.4,0,60.4H13V6h47.19Zm7.55,34.09H29.04v8h38.7v-8Zm-38.7,18.1h38.7v8H29.05v-8Z"></path></svg>Download</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card-overlay>
+          <umd-element-card-overlay data-theme="dark">
+            <p slot="eyebrow">Fearlessly Forward</p>
+            <h3 slot="headline"><a href="https://strategic-plan.files.svdcdn.com/production/file/FF_Progress_Report_Spring_2023.pdf?dm=1719260132" target="_blank" rel="noopener">2023 Annual Progress Report</a></h3>
+            <p slot="text"><a href="https://strategic-plan.files.svdcdn.com/production/file/FF_Progress_Report_Spring_2023_PlainText.txt?dm=1719930357" target="_blank" rel="noopener">Plain text version</a></p>
+            <div slot="actions">
+              <umd-element-call-to-action data-display="secondary" data-theme="dark">
+                <a href="https://strategic-plan.files.svdcdn.com/production/file/FF_Progress_Report_Spring_2023.pdf?dm=1719260132" target="_blank" rel="noopener"><svg title="document icon" aria-hidden="true" id="icon-document" data-name="icon-document" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><style>.cls-1 { fill-rule: evenodd; }</style></defs><path class="cls-1" d="m83.12,23.3v.63h-17.26s0-16.99,0-16.99l17.26,16.36ZM60.19,6v23.6h22.93s0,60.4,0,60.4H13V6h47.19Zm7.55,34.09H29.04v8h38.7v-8Zm-38.7,18.1h38.7v8H29.05v-8Z"></path></svg>Download</a>
+              </umd-element-call-to-action>
+            </div>
+          </umd-element-card-overlay>
+        </div>
+      </umd-element-carousel-cards>
+    </section>
+
+    <!-- 5. MOVING FEARLESSLY FORWARD — section intro > rich text >
+         annual-planning-cycle image > rich text, in the 992px article lock.
+         48px after the intro (vertical-landing-child), 32px stack rhythm
+         (.sp-article). -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-section-intro include-separator class="umd-layout-vertical-landing-child">
+        <h2 slot="headline">Moving Fearlessly Forward</h2>
+      </umd-element-section-intro>
+      <div class="umd-layout-space-horizontal-small sp-article">
+        <div class="umd-text-rich-advanced">
+          <p>Together, we developed, launched, and now implement <em>Fearlessly Forward</em>. Our strategic plan emerged from widespread Terp engagement and, after its launch in February, 2022, has become a central and guiding force for all colleges and divisions. The implementation is a simultaneously cyclical and continuous process in which we assess our progress, gather community input and engagement, set priorities and initiatives and invest in needed infrastructure and support.</p>
+        </div>
+        <img src="../images/implementation/annual-planning-cycle.png" alt="Strategic plan graphic: the development of the 10-year strategic plan — commitments, goals, objectives, and initiatives — feeds an annual planning cycle of assessment, community engagement, and priority setting, which drives the implementation of bold new initiatives and their measures before the cycle starts over" />
+        <div class="umd-text-rich-advanced">
+          <p>What the University of Maryland does matters, and how we do it matters. The collective work of every member of our community&mdash;faculty, students, staff, alumni, and partners&mdash;must be empowered and celebrated if we are to realize our ambitious vision.</p>
+          <p>We have committed ourselves to fearless ideas rooted in our principles of inclusive excellence, driven by innovation and impact, and relentlessly focused on public good and service to humanity. Now is the moment and the University of Maryland is <strong><em>moving fearlessly forward together</em></strong> to forge a better world for humankind.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. TURTLE CLIMB ILLUSTRATION — standalone contained image block
+         (project asset replacing the live site's process-document banner). -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-normal sp-figure">
+        <img src="../images/implementation/turtles-climbing-timeline.jpg" alt="Watercolor illustration of five diamondback terrapins walking and climbing up a rocky slope from a marker reading 2020 to one reading 2030, their shells progressively filling in with red and gold Maryland patterns as they ascend" />
+      </div>
+    </section>
+
+    <!-- 7. IMPLEMENTATION COMPONENTS — landing accordion stack (RULES.md §32).
+         Bodies come from the live page's lists; the comp shows all four
+         collapsed. "Initiatives" fixes the live page's "Intiatives" typo. -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-small">
+        <div style="display: grid; gap: var(--umd-space-min);">
+        <umd-element-accordion-item>
+          <span slot="headline">Annual Priority Setting and Initiatives</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced">
+              <ul>
+                <li>President's Cabinet retreat</li>
+                <li>Annual college planning meetings</li>
+                <li>Senate leadership</li>
+                <li>Provost's student advisory committees</li>
+                <li>Academic Planning Advisory Committee (APAC)</li>
+                <li>Signature initiatives</li>
+                <li>College and Division programs and activities</li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">Investing in Needed Infrastructure and Support</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced">
+              <ul>
+                <li>Personnel</li>
+                <li>Communications</li>
+                <li>Coordination</li>
+                <li>Resources</li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">Community Input and Engagement</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced">
+              <ul>
+                <li>2022-2023 Implementation Committees</li>
+                <li>Peer review of fearless ideas</li>
+                <li>Student, faculty, and staff surveys</li>
+                <li>Workgroups and taskforces to launch and steer key initiatives</li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">Assessing Our Progress</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced">
+              <ul>
+                <li>Tracking progress through global, strategic commitment, and initiative metrics</li>
+                <li>Annual reports</li>
+                <li>Presentations to key university constituents (e.g. students, faculty, staff, community)</li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. OUR PROCESS — gold banner-promo with Download + plain-text
+         stacked actions (same call-to-action text-slot pattern as the
+         index.html closer). -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-banner-promo>
+          <h2 slot="headline">Our Process</h2>
+          <p slot="text">Moving Fearlessly Forward - Implementing Our Strategic Plan Process Document</p>
+          <div slot="actions" class="banner-promo-actions">
+            <umd-element-call-to-action data-display="primary">
+              <a href="https://strategic-plan.files.svdcdn.com/production/file/FF-Implementing-Our-Strategic-Plan-Process-Document.pdf?dm=1685454544" target="_blank" rel="noopener"><svg title="document icon" aria-hidden="true" id="icon-document" data-name="icon-document" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><defs><style>.cls-1 { fill-rule: evenodd; }</style></defs><path class="cls-1" d="m83.12,23.3v.63h-17.26s0-16.99,0-16.99l17.26,16.36ZM60.19,6v23.6h22.93s0,60.4,0,60.4H13V6h47.19Zm7.55,34.09H29.04v8h38.7v-8Zm-38.7,18.1h38.7v8H29.05v-8Z"></path></svg>Download</a>
+              <a href="https://strategic-plan.files.svdcdn.com/production/file/Process-Document-plain-text.txt?dm=1684953859" slot="text" target="_blank" rel="noopener">(Plain text)</a>
+            </umd-element-call-to-action>
+          </div>
+        </umd-element-banner-promo>
+      </div>
+    </section>
+
+    <!-- 9. OUR CRITICAL ENABLERS — sticky columns: text lockup left,
+         stacked list cards (image right) scrolling on the right. -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-sticky-columns class="umd-layout-space-horizontal-larger" data-layout-position="100px">
+        <div slot="sticky-column">
+          <h2 class="umd-sans-largest-uppercase mb-md">Our Critical Enablers</h2>
+          <div class="umd-text-rich-advanced mb-sm">
+            <p>Our critical enablers will be keys to the plan's success, and ultimately, to that of the University of Maryland.</p>
+          </div>
+        </div>
+        <div slot="static-column">
+          <div class="umd-layout-grid-gap-stacked umd-animation-grid">
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-diverse-community.jpg" alt="Fearlessly Forward Assembly participants engaging with one another" />
+              <h3 slot="headline">Diverse and Engaged Community</h3>
+              <p slot="text">Bringing together diverse voices and identities across our campus and the community inspires collaboration and creativity and accelerates solutions to grand challenges.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-infrastructure.jpg" alt="Celebrations for Zupnik Hall's groundbreaking" />
+              <h3 slot="headline">Infrastructure</h3>
+              <p slot="text">Investing in state-of-the-art facilities and leading technologies enables us to tackle grand challenges, support world-class learning and research, and promote innovation and excellence in ways that are responsible and sustainable.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-shared-governance.jpg" alt="View of the University of Maryland seal on the Sundial with a student and Main Administration Building in the background" />
+              <h3 slot="headline">Shared Governance</h3>
+              <p slot="text">Engaging all students, faculty, and staff in shaping our future advances, our common purpose, impactful and inclusive research, teaching, and service to humanity.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-communications.jpg" alt="Students dancing at Maryland Day" />
+              <h3 slot="headline">Communications and External Engagement</h3>
+              <p slot="text">Sparking dialogue and engagement with alumni and local, state, national, and international partners accelerates and amplifies our real-world impact.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-strategic-location.jpg" alt="Maryland Governor Wes Moore speaking on campus" />
+              <h3 slot="headline">Strategic Location</h3>
+              <p slot="text">Leveraging our location positions us to promote civic engagement, address state and federal priorities, and expand partnerships with government agencies, policymakers, research organizations, and private partners.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-rewards.jpg" alt="Testudo mascot overlooking the Mall from the second floor porch area of McKeldin Library" />
+              <h3 slot="headline">Reward Systems and Incentives</h3>
+              <p slot="text">Rewarding and incentivizing behaviors and actions that align with our values increases our capacity to activate creativity, amplify impact, and promote inclusive learning.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-resources.jpg" alt="A James Clark School of Engineering faculty and staff posing for Giving Day" />
+              <h3 slot="headline">Resources</h3>
+              <p slot="text">Attracting new resources and promoting effective stewardship of existing resources allows us to invest in high-priority areas that advance our mission and vision.</p>
+            </umd-element-card>
+            <umd-element-card data-display="list">
+              <img slot="image" src="../images/implementation/enabler-coordination.jpg" alt="Students scuba diving with a spacecraft fuselage and Euclid, a free-flying underwater robot, in the Neutral Buoyancy tank" />
+              <h3 slot="headline">Increased Coordination and Agility</h3>
+              <p slot="text">Enhancing internal and external coordination and implementing agile practices position us to further integrate our education and research missions, pursue interdisciplinary collaboration, and expand partnerships.</p>
+            </umd-element-card>
+          </div>
+        </div>
+      </umd-element-sticky-columns>
+    </section>
+
+    <!-- 10. IMPLEMENTATION COMMITTEES — section intro > contained group photo. -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-section-intro include-separator class="umd-layout-vertical-landing-child">
+        <h2 slot="headline">2022-2023 Strategic Plan Implementation Committees</h2>
+      </umd-element-section-intro>
+      <div class="umd-layout-space-horizontal-larger sp-figure">
+        <img src="../images/implementation/committees-group.jpg" alt="Members of the 2022-2023 Strategic Plan Implementation Committees posing together indoors" />
+      </div>
+    </section>
+
+    <!-- 11. COMMITTEE CHARGE — rich text block (992px lock). -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-small">
+        <div class="umd-text-rich-advanced">
+          <p>The strategic plan was the result of broad campus participation, fueled by the work of six pillar committees, and made bolder, wiser and more inclusive with open forums and engagement from the community. In continuation of this precedent, all UMD students, faculty and staff were eligible to self-nominate to participate on a strategic plan implementation committee to add critical oversight, feedback and accountability to the implementation process. In the Fall of 2022, Provost Jennifer Rice charged the committees with:</p>
+          <ul>
+            <li>Providing input to the Provost on critical enablers, campus engagement, and opportunities for synergies and collaborations;</li>
+            <li>Advising the Provost on appropriate targets and metrics to assess progress;</li>
+            <li>Ensuring we are accountable to achieving goals by reviewing data collected annually by IRPA; and</li>
+            <li>Reviewing campus initiatives directly and informally associated with this pillar of the strategic plan, and making recommendations regarding prioritization of initiatives for campus-level support.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. COMMITTEE ROSTERS — landing accordion stack (RULES.md §32). The comp's
+         rows 2-4 are placeholder labels; the real committee names and
+         rosters come from the live page. -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-small">
+        <div style="display: grid; gap: var(--umd-space-min);">
+        <umd-element-accordion-item>
+          <span slot="headline">We Reimagine Learning Committee</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced sp-roster">
+              <p><strong>Vice President Liaisons:</strong></p>
+              <ul>
+                <li>Jeff Hollingsworth, <em>Vice President and Chief Information Officer</em></li>
+                <li>Jennifer Rice, <em>Senior Vice President and Provost</em></li>
+                <li>Patty Perillo, <em>Vice President for Student Affairs</em></li>
+              </ul>
+              <p><strong>Co-Chairs:</strong></p>
+              <ul>
+                <li>Bill Cohen, <em>Associate Provost and Dean for Undergraduate Studies</em></li>
+                <li>Marcio Oliveira, <em>Assistant Vice President for Academic Technology and Innovation</em></li>
+              </ul>
+              <p><strong>Committee Members:</strong></p>
+              <ul>
+                <li>Alan Socha, <em>Associate Director of Assessment for the Office of Institutional Research, Planning, and Assessment</em></li>
+                <li>Ana Palla Kane, <em>Senior IT Accessibility and UX Specialist</em></li>
+                <li>Andrea Goodwin, <em>Assistant Vice President for Student Affairs and Dean of Students</em></li>
+                <li>Anne Baum, <em>Associate Director of the Office of Extended Studies</em></li>
+                <li>Bill Kules, <em>Principal Lecturer for the College of Information Studies and Director of the iConsultancy Experiential Learning Program</em></li>
+                <li>Carmen Bryan, <em>Executive Assistant to the Assistant Vice President for Academic Technology and Innovation</em></li>
+                <li>Christopher Bonner, <em>Associate Professor for the Department of History</em></li>
+                <li>Ebony Terrell Shockley, <em>Executive Director of Teacher Education and Associate Clinical Professor for the Department of Teaching and Learning, Policy and Leadership</em></li>
+                <li>Eliza Thompson, <em>Assistant Clinical Professor for the Department of Hearing and Speech Sciences</em></li>
+                <li>Hilary Gossett, <em>Assistant Director of Academic Facilities</em></li>
+                <li>Jason Farman, <em>Professor for the Department of American Studies and Director of the Design Cultures and Creativity Program</em></li>
+                <li>John Johnson, <em>Strategic Program Manager for the Project Management Center for Excellence</em></li>
+                <li>Jordan Sly, <em>Research and Instruction Librarian and Doctoral Student in the Department of History</em></li>
+                <li>Marie Brodsky, <em>Undergraduate Student in the Department of Mathematics</em></li>
+                <li>Marinel Martinez-Benyarko, <em>Coordinator for Human Resources, Training, and Development for the Stamp Student Union and Doctoral Candidate in Higher Education, Student Affairs, and International Education</em></li>
+                <li>Mary Warneka, <em>Associate Director of Learning Experience</em></li>
+                <li>Michelle Tan, <em>Associate Registrar</em></li>
+                <li>Stephen Roth, <em>Associate Dean of Academic and Faculty Affairs in the School of Public Health and Director of the Department of Public Health Science</em></li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">We Take on Humanity's Grand Challenges Committee</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced sp-roster">
+              <p><strong>Vice President Liaisons:</strong></p>
+              <ul>
+                <li>Greg Ball, <em>Vice President for Research</em></li>
+                <li>Jennifer Rice, <em>Senior Vice President and Provost</em></li>
+              </ul>
+              <p><strong>Co-Chairs:</strong></p>
+              <ul>
+                <li>Betsy Beise, <em>Associate Provost for Academic Planning and Programs</em></li>
+                <li>Eric Chapman, <em>Associate Vice President for Research Development</em></li>
+              </ul>
+              <p><strong>Committee Members:</strong></p>
+              <ul>
+                <li>Andy Harris, <em>Professor and Chair for the Department of Astronomy</em></li>
+                <li>Bob Reuning, <em>Associate Vice President and Chief of Facilities Officer</em></li>
+                <li>Doug Roberts, <em>Associate Professor and Associate Dean of Undergraduate Services for the Department of Physics</em></li>
+                <li>Elisabeth Smela, <em>Professor for the Department of Mechanical Engineering</em></li>
+                <li>Jan-Michael Archer, <em>Doctoral Candidate in Environmental Health Sciences</em></li>
+                <li>Jean McGloin, <em>Professor and Associate Dean of Research and Graduate Education in the College of Behavioral and Social Sciences</em></li>
+                <li>Jim Harris, <em>Associate Vice President for University Development</em></li>
+                <li>Jo Richardson, <em>Joel and Kim Feller Endowed Professor and MPower Professor for African-American Studies and Medical Anthropology</em></li>
+                <li>Kimbra Cutlip, <em>Associate Program Director for the College of Agriculture and Natural Resources</em></li>
+                <li>Sara Gavin, <em>Program Director for the Office of Marketing and Communications</em></li>
+                <li>Stephanie Shonekan, <em>Dean of the College of Arts and Humanities</em></li>
+                <li>Suha Hassan, <em>Undergraduate Student in Criminology and Criminal Justice and Public Policy</em></li>
+                <li>Ted Knight, <em>Research Communications and Strategic Partnerships</em></li>
+                <li>Tom Dobrosielski, <em>Manager of Decision Support Systems for the Office of Institutional Research, Planning, and Assessment</em></li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">We Invest in People and Communities Committee</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced sp-roster">
+              <p><strong>Vice President Liaisons:</strong></p>
+              <ul>
+                <li>Carlo Colella, <em>Vice President for Administration</em></li>
+                <li>Georgina Dodge, <em>Vice President for Diversity and Inclusion</em></li>
+                <li>Patty Perillo, <em>Vice President for Student Affairs</em></li>
+              </ul>
+              <p><strong>Chair:</strong></p>
+              <ul>
+                <li>James McShay, <em>Assistant Vice President for Engagement</em></li>
+              </ul>
+              <p><strong>Committee Members:</strong></p>
+              <ul>
+                <li>Adrienne Hamcke Wicker, <em>Director of the Center for Leadership and Organizational Change</em></li>
+                <li>Amanda Grimes, <em>Assistant Dean for Finance and Administration for the School of Public Health</em></li>
+                <li>Amy Dwyer D'Agati, <em>Senior Faculty Specialist for the Department of Counseling, Higher Education, and Special Education</em></li>
+                <li>Antonietta Jennings, <em>Administrative Assistant for the Institute for Governmental Service and Research</em></li>
+                <li>Brian Medina, <em>Program Manager of Bias Incident Support Services</em></li>
+                <li>Chantelle Smith, <em>University Honors College Coordinator for Recruitment and Programming</em></li>
+                <li>Cynthia Edmunds, <em>Senior Associate Athletic Director for Diversity, Equity, and Inclusion/Organizational Effectiveness</em></li>
+                <li>Danielle Glazer, <em>Manager of Assessment in the Office of Institutional Research, Planning, and Assessment</em></li>
+                <li>Gunjan Sharma, <em>Graduate Student in the Master of Science in Information Systems Program</em></li>
+                <li>Heidi Scott, <em>Senior Lecturer for the Department of English and Communications Associate for the National Socio-Environmental Synthesis Center</em></li>
+                <li>John Bertot, <em>Professor for the College of Information Studies and Associate Provost for Faculty Affairs</em></li>
+                <li>Kalia Patricio, <em>Assistant Director of Human Resources for the Stamp Student Union</em></li>
+                <li>Megan Gebregziabher, <em>Director and Chief of Staff in the Office of the Provost</em></li>
+                <li>Michael Bruce, <em>Multi Trade Supervisor III</em></li>
+                <li>Niko Reed, <em>Doctoral Student in the Department of Physics</em></li>
+                <li>Rythee Lambert-Jones, <em>Assistant Vice President and Chief of Human Resources Officer</em></li>
+                <li>Shannon Gundy, <em>Director of Undergraduate Admissions</em></li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        <umd-element-accordion-item>
+          <span slot="headline">We Partner to Advance the Public Good Committee</span>
+          <div slot="text">
+            <div class="umd-text-rich-advanced sp-roster">
+              <p><strong>Vice President Liaisons:</strong></p>
+              <ul>
+                <li>Greg Ball, <em>Vice President for Research</em></li>
+                <li>Carlo Colella, <em>Vice President for Administration</em></li>
+                <li>Matt Hodge, <em>Vice President for University Relations</em></li>
+              </ul>
+              <p><strong>Chair:</strong></p>
+              <ul>
+                <li>KerryAnn O'Meara, <em>Special Assistant to the Provost for Strategic Initiatives</em></li>
+              </ul>
+              <p><strong>Committee Members:</strong></p>
+              <ul>
+                <li>Carson Peters, <em>Doctoral Student in the School of Public Health, Department of Behavioral and Community Health</em></li>
+                <li>Catherine C. Fisanich, <em>Administrative Specialist for the Department of Chemistry and Biochemistry</em></li>
+                <li>Colin Phillips, <em>Professor of Linguistics and Director of the Maryland Language Science Center</em></li>
+                <li>Courtney Holder, <em>Assistant Director of the Stamp Student Union Leadership and Community Service-Learning Department</em></li>
+                <li>Darren Jarboe, <em>Principal Agent and Assistant Director of the University of Maryland Extension Agriculture and Food Systems</em></li>
+                <li>Dean Chang, <em>Associate Vice President for Innovation and Economic Development</em></li>
+                <li>Eric Reinke, <em>Associate Athletic Director for Business Operations</em></li>
+                <li>Urszula Cieslak, <em>Undergraduate Student in the Robert H. Smith School of Business</em></li>
+                <li>Gloria Aparicio Blackwell, <em>Founder and Director of Community Engagement for the Office of Community Engagement</em></li>
+                <li>Jeanette Snider, <em>Assistant Research Professor with the Social Justice Alliance and Anti-Black Racism Initiative and Adjunct Professor at the Robert H. Smith School of Business</em></li>
+                <li>John Sawyer, <em>Director of Strategic Research Initiatives</em></li>
+                <li>Julie Silva, <em>Professor for the Department of Geographical Sciences</em></li>
+                <li>Kathleen Perry, <em>Assistant to the Provost</em></li>
+                <li>Ken Ulman, <em>Chief Strategy Officer for Economic Development for the University of Maryland College Park Foundation and President of Terrapin Development Company</em></li>
+                <li>Lance Beasley, <em>Coordinator of Reporting for the Office of Institutional Research, Planning, and Assessment</em></li>
+                <li>Lena Morreale Scott, <em>Director of the Civic Education and Engagement Initiative, Office of the Dean, College of Education</em></li>
+                <li>Martina Grunwald, <em>Executive Director of Development for University Relations</em></li>
+                <li>Nicholas Orban, <em>Special Assistant to the Associate Vice President for Enrollment Management</em></li>
+                <li>Rashawn Ray, <em>Professor for the Department of Sociology and Executive Director of the Lab for Applied Social Science Research</em></li>
+                <li>Ross Stern, <em>Executive Director for Government Relations</em></li>
+              </ul>
+            </div>
+          </div>
+        </umd-element-accordion-item>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. MOVING FEARLESSLY FORWARD TOGETHER — section intro > contained
+         terrapin-shell illustration (project asset replacing the live
+         site's tall process-document poster). -->
+    <section class="umd-layout-vertical-landing">
+      <umd-element-section-intro include-separator class="umd-layout-vertical-landing-child">
+        <h2 slot="headline">Moving Fearlessly Forward Together</h2>
+      </umd-element-section-intro>
+      <div class="umd-layout-space-horizontal-larger sp-figure">
+        <img class="sp-figure-narrow" src="../images/implementation/turtle-shell-community-labels.png" alt="Illustration of a diamondback terrapin viewed from above, its shell plates labeled with the campus communities carrying the plan forward — students, faculty and staff, alumni, and partner units — and its rim plates labeled with UMD college and school abbreviations" />
+      </div>
+    </section>
+
+    <!-- 14. CTA BAR — banner-promo, default gold theme (same closer as index.html) -->
+    <section class="umd-layout-vertical-landing">
+      <div class="umd-layout-space-horizontal-larger">
+        <umd-element-banner-promo>
+          <p slot="text"><strong>FEARLESSLY FORWARD IN PURSUIT OF EXCELLENCE AND IMPACT FOR THE PUBLIC GOOD:</strong> THE UNIVERSITY OF MARYLAND STRATEGIC PLAN is a living document and will evolve and grow as we do. Please visit this site to follow our progress as we move fearlessly forward.</p>
+          <div slot="actions" class="banner-promo-actions">
+            <umd-element-call-to-action data-display="primary">
+              <a href="https://issuu.com/umaryland/docs/strategicplan2022?fr=sNDZhNTQ2MzkxOTM" target="_blank" rel="noopener">View Digital PDF (Issuu)</a>
+              <a href="https://strategic-plan.files.svdcdn.com/production/file/strategic-plan-text-2022-b.txt?dm=1699301204" slot="text" target="_blank" rel="noopener">Text Version</a>
+            </umd-element-call-to-action>
+          </div>
+        </umd-element-banner-promo>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <umd-element-footer data-display="visual">
+    <a slot="logo" href="https://strategicplan.umd.edu/">
+      <img src="../images/logos/footer-logo.svg" alt="University of Maryland Strategic Plan" />
+    </a>
+    <img slot="image" src="../images/strategic-plan/footer.png" alt="University of Maryland campus" />
+  </umd-element-footer>
+
+  <!-- GRID ENTRY ANIMATIONS — shared canonical script -->
+  <script src="../page-builder/scripts/grid-animations.js"></script>
+
+  <!-- NAV-HEADER LOGO WIDTH — shadow injection for strategic plan wordmark -->
+  <script>
+    (function () {
+      function inject(el) {
+        if (!el.shadowRoot || el.__navHeaderLogoInjected) return;
+        el.__navHeaderLogoInjected = true;
+        var style = document.createElement('style');
+        style.textContent = '.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }';
+        el.shadowRoot.appendChild(style);
+      }
+      document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      customElements.whenDefined('umd-element-navigation-header').then(function () {
+        document.querySelectorAll('umd-element-navigation-header').forEach(inject);
+      });
+    })();
+  </script>
+
+</body>
+</html>

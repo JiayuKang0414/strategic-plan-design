@@ -111,6 +111,17 @@ The impact page's centered intro is a stock `umd-element-section-intro` (text + 
 
 Pages using this: `pages/impact.html`.
 
+## Implementation page in-section rhythm (`.sp-article`, `.sp-figure`)
+
+`pages/implementation.html` is built entirely from design-system components plus rich text and image blocks — no custom components. Two page-built spacing classes supply the comp's in-section rhythm, which the DS does not codify for landing sections (accordion stacks need no override — they follow the canonical landing pattern in page-builder RULES.md §32: `umd-layout-space-horizontal-small` lock + grid `gap: var(--umd-space-min)`):
+
+- **`.sp-article`** — on the 992px lock (`umd-layout-space-horizontal-small`) inside a section: `> * + * { margin-top: 32px }`. Per the comp, elements *within* a section (rich text → image → rich text) sit 32px apart, while the 48px-desktop gap after a section intro comes from the standard `umd-layout-vertical-landing-child` on the intro. Note: a flat 32px between in-section elements is the *interior*-page child value (RULES.md §21) — the comp applies it inside landing sections, so it lives here as a project convention.
+- **`.sp-figure` / `.sp-figure-narrow`** — contained image blocks inside a horizontal lock; the narrow variant centers the terrapin-shell illustration at the comp's 1042px.
+
+Known console noise: `umd-element-banner-promo` logs "Slot validation failed / Slot 'text' contains invalid elements" for the `<a slot="text">` stacked link inside `umd-element-call-to-action` in the actions slot. This is a DS validator false positive (the anchor slots into the CTA, not the banner) — pre-existing on `pages/index.html` and `pages/impact.html`, banners render correctly.
+
+**Pages using this:** `pages/implementation.html`.
+
 ## Pathway sticky (first pathway)
 
 The first `umd-element-pathway` on `pages/index.html` is sticky (scrolls with the viewport until it reaches its scroll boundary). Standard pathway component with `position: sticky` applied via a wrapper or shadow injection as needed.
