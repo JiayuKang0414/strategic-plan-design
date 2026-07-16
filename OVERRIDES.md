@@ -86,9 +86,9 @@ Why custom (per the CLAUDE.md registry-first rule): no DS carousel supports cate
 - The carousel is NOT scroll-snap: a flex track slid one card per click by setting inline `left` (card offsetWidth + gap, 0.5s ease-in-out CSS transition), 500ms debounce, prev/next auto-hide at the ends (`hidden` attribute), touch swipe ≥ 90px pages one card.
 - Cards (`umd-timeline-card[data-color]`): 4px right+bottom border and overlapping date chip in the category color, vertical ghost year (`writing-mode: vertical-rl`, Interstate 900 44px #E6E6E6) over the image's right rail, title/deck/arrow link.
 
-### Section intro works text-only (registry correction)
+### Page intro (`.sp-page-intro`) — slot styling only
 
-`registry-content.json` marks the section-intro `headline` slot as required, but `umd-element-section-intro` renders correctly with only `slot="text"` + `slot="actions"` — the impact page's centered intro (red separator, bold centered paragraph, CTA) uses exactly that. Don't hand-roll this pattern.
+The impact page's centered intro is a stock `umd-element-section-intro` (text + actions slots, no headline — supported per the registry). The DS renders headline-less text at 18px/400, so `.sp-page-intro` styles the slotted paragraph to the comp's bold 22px black lead. See the section-intro registry notes in `page-builder/registry/registry-content.json` for the v1.18.12 caveat.
 
 ## Watermark utility — ghost word needs its own wrapper
 
