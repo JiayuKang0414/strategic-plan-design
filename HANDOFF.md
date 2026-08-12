@@ -1,6 +1,6 @@
 # Handoff — Strategic Plan Design
 
-_Last updated: 2026-07-27_
+_Last updated: 2026-08-12_
 
 This note captures where the project stands so work can be picked up from a fresh
 clone (e.g. from a different Claude account). Everything needed to continue lives
@@ -24,6 +24,7 @@ design-system rules).
 **Built pages** (in `pages/`):
 - `index.html` — landing page; the **canonical reference** for header/nav/logo/footer. Copy its chrome verbatim into new pages.
 - `principles.html` — Guiding Principles
+- `strategic-commitments.html` — Strategic Commitments landing page
 - `impact.html` — Impact (nav item formerly "Metrics")
 - `implementation.html` — Implementation
 - `commitment/we-reimagine-learning.html` — first of four Strategic Commitment pages
@@ -36,7 +37,6 @@ design-system rules).
 
 `pages/index.html` links to several pages that are **not built yet**:
 
-- [ ] `pages/strategic-commitments.html` — the Strategic Commitments landing/overview page
 - [ ] `pages/commitment/we-take-on-humanitys-grand-challenges.html`
 - [ ] `pages/commitment/we-partner-to-advance-the-public-good.html`
 - [ ] `pages/commitment/we-invest-in-people-and-communities.html`

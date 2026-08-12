@@ -6,6 +6,18 @@
 
 Pages using this: all pages in this project.
 
+## Navigation header logo width — strategic plan wordmark
+
+**Component:** `umd-element-navigation-header`. The component's shadow DOM constrains its logo image for the standard university lockup, but this project's wider strategic-plan wordmark needs a larger horizontal allowance while retaining the established header height.
+
+**Override:** After `customElements.whenDefined('umd-element-navigation-header')`, inject the following rule into every navigation header's shadow root:
+
+```css
+.element-header-logo img { max-width: 320px !important; max-height: 38px !important; }
+```
+
+Pages using this: all pages in this project, including `pages/strategic-commitments.html`.
+
 ## Hero: use standard background hero — never `data-display="overlay"`
 
 For landing page heroes in this project, use the standard/background hero: `data-theme="dark"` with **no** `data-display` attribute. The overlay variant (`data-display="overlay"`) composites a color layer over the image and is a different visual treatment. Omitting `data-display` gives the correct standard full-bleed image hero.
