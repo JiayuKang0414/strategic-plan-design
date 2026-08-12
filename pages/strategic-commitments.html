@@ -792,37 +792,65 @@ body { overflow-x: clip; }
       </umd-element-hero>
     </section>
 
-    <!-- 4. STRATEGIC COMMITMENTS — 2×2 no-gap overlay-card mosaic -->
+    <!-- 4. STRATEGIC COMMITMENTS — alternating light overlay pathways -->
     <section class="umd-layout-vertical-landing">
-      <div class="umd-layout-space-horizontal-larger">
-        <div class="umd-layout-grid-columns-two umd-animation-grid">
-
-          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
-            <img slot="image" src="../images/impact/group-reimagine-learning.jpg" alt="Students collaborating in an active-learning classroom" />
-            <h2 slot="headline"><a href="commitment/we-reimagine-learning.html">We Reimagine Learning</a></h2>
-            <p slot="text">We reimagine learning and teaching as inclusive, experiential, publicly engaged, creative, integrative, holistic, and empowering.</p>
-          </umd-element-card-overlay>
-
-          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
-            <img slot="image" src="../images/impact/group-grand-challenges.jpg" alt="Researchers raising field equipment beneath a cloudy sky" />
-            <h2 slot="headline"><a href="commitment/we-take-on-humanitys-grand-challenges.html">We Take On Humanity's Grand Challenges</a></h2>
-            <p slot="text">Our education, research, scholarship and creative activities, and service are designed to accelerate solutions to humanity's grand challenges—within our communities and around the globe.</p>
-          </umd-element-card-overlay>
-
-          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
-            <img slot="image" src="../images/impact/group-invest-people.jpg" alt="University colleagues collaborating around a table" />
-            <h2 slot="headline"><a href="commitment/we-invest-in-people-and-communities.html">We Invest in People and Communities</a></h2>
-            <p slot="text">We invest in people, their well-being and advancement, and the conditions that support their ability to fully participate and thrive in our community, state, and world.</p>
-          </umd-element-card-overlay>
-
-          <umd-element-card-overlay type="image" data-theme="dark" class="size-large">
-            <img slot="image" src="../images/impact/group-partner-public-good.jpg" alt="University and community partners examining crops in a field" />
-            <h2 slot="headline"><a href="commitment/we-partner-to-advance-the-public-good.html">We Partner to Advance the Public Good</a></h2>
-            <p slot="text">Our future is tied to and interconnected with our local, state, national, and international partners. We will create and sustain partnerships that allow our research to have impact locally and globally, our education to prepare students for civic engagement and impact, and our service to create solutions for a more equitable, sustainable, and resilient world.</p>
-          </umd-element-card-overlay>
-
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="left">
+        <img slot="image" src="../images/commitment/hero-reimagine-learning.jpg" alt="Synapto brain research display and student at the A. James Clark Hall Open House." />
+        <h2 slot="headline">We Reimagine Learning</h2>
+        <div slot="text">
+          <p>We reimagine learning and teaching as inclusive, experiential, publicly engaged, creative, integrative, holistic, and empowering.</p>
         </div>
-      </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <a href="commitment/we-reimagine-learning.html">Explore This Commitment</a>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="right">
+        <img slot="image" src="../images/commitment/hero-grand-challenges.jpg" alt="Individuals working on the Global FEWture Alliance Grand Challenges Grant" />
+        <h2 slot="headline">We Take On Humanity's Grand Challenges</h2>
+        <div slot="text">
+          <p>Our education, research, scholarship and creative activities, and service are designed to accelerate solutions to humanity's grand challenges—within our communities and around the globe.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <a href="commitment/we-take-on-humanitys-grand-challenges.html">Explore This Commitment</a>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="left">
+        <img slot="image" src="../images/commitment/hero-invest-people-communities.jpg" alt="Students on the Mall on a snow day posing near the Testudo statue after building a snowman on the steps of McKeldin Library." />
+        <h2 slot="headline">We Invest in People and Communities</h2>
+        <div slot="text">
+          <p>We invest in people, their well-being and advancement, and the conditions that support their ability to fully participate and thrive in our community, state, and world.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <a href="commitment/we-invest-in-people-and-communities.html">Explore This Commitment</a>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
+    </section>
+
+    <section class="umd-layout-vertical-landing">
+      <umd-element-pathway data-display="overlay" data-theme="light" data-layout-image-position="right">
+        <img slot="image" src="../images/commitment/hero-partner-public-good.jpg" alt="Visitors playing in and around ODK Fountain on the Mall during Maryland Day" />
+        <h2 slot="headline">We Partner to Advance the Public Good</h2>
+        <div slot="text">
+          <p>Our future is tied to and interconnected with our local, state, national, and international partners. We will create and sustain partnerships that allow our research to have impact locally and globally, our education to prepare students for civic engagement and impact, and our service to create solutions for a more equitable, sustainable, and resilient world.</p>
+        </div>
+        <div slot="actions">
+          <umd-element-call-to-action data-display="primary">
+            <a href="commitment/we-partner-to-advance-the-public-good.html">Explore This Commitment</a>
+          </umd-element-call-to-action>
+        </div>
+      </umd-element-pathway>
     </section>
 
     <!-- 5. CLOSING CTA — established banner-promo -->

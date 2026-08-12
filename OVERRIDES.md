@@ -62,7 +62,7 @@ For light pathways with the grey offset panel (strategic-plan commitment pages),
 
 Do **not** shadow-inject a panel onto the standard (no `data-display`) pathway — `data-theme="light"` is a no-op there in cdn.js v1.18.12 and an injection was previously needed; the overlay variant replaced it.
 
-**Pages using this:** `pages/commitment/we-reimagine-learning.html` (all five initiative pathways).
+**Pages using this:** `pages/commitment/we-reimagine-learning.html` (all five initiative pathways), `pages/strategic-commitments.html` (all four commitment pathways).
 
 ## Modal (`umd-element-modal`) — actual v1.18.12 contract differs from registry
 
