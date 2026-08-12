@@ -50,9 +50,9 @@ Strategic-plan-specific shadow-DOM injections, class overrides, and custom compo
 
 ## Strategic Commitments Venn diagram
 
-Custom full-bleed section on `pages/index.html`. Four overlapping circles in brand colors (UMD red, gold, black, grey) with label text in each segment and "FEARLESSLY FORWARD" centered at the intersection. Implemented as a custom HTML/CSS block — not a design-system component and not a candidate for the DS upstream.
+Custom full-bleed section on `pages/strategic-commitments.html`. Four overlapping circles in brand colors (UMD red, gold, black, grey) with label text in each segment and "FEARLESSLY FORWARD" centered at the intersection. Implemented as a custom HTML/CSS block — not a design-system component and not a candidate for the DS upstream.
 
-Pages using this: `pages/index.html`.
+Pages using this: `pages/strategic-commitments.html`.
 
 ## Pathway light panels — use the overlay variant, not a standard-pathway injection
 
